@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VyapaarMitra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&family=Noto+Sans+Arabic:wght@400;600&family=Noto+Sans+Ol+Chiki:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: one phone-width working column; on wide screens a second column shows how each sentence was understood */
+  --ground:#EEF1F4; --surface:#FFFFFF; --ink:#14213D; --muted:#566277; --line:#D5DBE3;
+  --sign:#1D46B0; --sign-ink:#FFFFFF; --accent:#1D46B0; --accent-ink:#FFFFFF;
+  --marigold:#F4A40B; --marigold-ink:#2A1B00;
+  --slip:#FFF4C2; --slip-ink:#2B2410; --slip-line:#DCCB7C;
+  --good:#177245; --warn:#9A4A06; --bad:#B3261E;
+  --display:"Baloo 2","Noto Sans Devanagari","Noto Sans",system-ui,sans-serif;
+  --body:"Noto Sans","Noto Sans Devanagari","Noto Sans Bengali","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Gujarati","Noto Sans Kannada","Noto Sans Malayalam","Noto Sans Gurmukhi","Noto Sans Oriya","Noto Sans Arabic","Noto Sans Ol Chiki",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --ground:#0D1322; --surface:#161E33; --ink:#E8ECF5; --muted:#9BA7BF; --line:#2A3554;
+  --sign:#1B3A8F; --sign-ink:#FFFFFF; --accent:#9DB8FF; --accent-ink:#0D1322;
+  --marigold:#F6B02E; --marigold-ink:#2A1B00; --slip:#2B2815; --slip-ink:#F3E7B0; --slip-line:#5A522A;
+  --good:#5CCB8F; --warn:#F0A35E; --bad:#FF8A80;}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --ground:#0D1322; --surface:#161E33; --ink:#E8ECF5; --muted:#9BA7BF; --line:#2A3554;
+  --sign:#1B3A8F; --sign-ink:#FFFFFF; --accent:#9DB8FF; --accent-ink:#0D1322;
+  --marigold:#F6B02E; --marigold-ink:#2A1B00; --slip:#2B2815; --slip-ink:#F3E7B0; --slip-line:#5A522A;
+  --good:#5CCB8F; --warn:#F0A35E; --bad:#FF8A80;}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--ground);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-text-size-adjust:100%}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+h1,h2,h3,h4,p,ul,ol{margin:0;padding:0}ul,ol{list-style:none}
+h1,h2,h3{text-wrap:balance}
+small{font-size:.8125rem;color:var(--muted)}
+.muted{color:var(--muted);font-size:.875rem}
+#app{height:100%;display:grid;grid-template-rows:auto 1fr auto;max-width:1120px;margin:0 auto}
+.top{background:var(--sign);color:var(--sign-ink);display:flex;align-items:center;gap:12px;padding:10px 16px}
+.top h1{font:700 1.5rem/1.1 var(--display);letter-spacing:.01em}
+.top .tagp{font-size:.75rem;border:1px solid rgba(255,255,255,.55);border-radius:99px;padding:2px 10px;white-space:nowrap}
+.top .sp{flex:1}
+.brand{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;min-width:0}
+#langbtn{background:var(--marigold);color:var(--marigold-ink);border:0;border-radius:10px;min-height:44px;padding:6px 14px;font-weight:600}
+.cols{overflow:auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:16px;align-content:start}
+#view>section{display:flex;flex-direction:column;gap:14px;max-width:560px;margin:0 auto}
+#how{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;max-width:560px;margin:0 auto;width:100%}
+#how.hidem{display:none}
+#how h2{font:700 1.125rem/1.2 var(--display);margin-bottom:10px}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:12px;margin-top:10px}
+.steps>li{counter-increment:s;position:relative;padding-inline-start:38px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.steps>li::before{content:counter(s);position:absolute;inset-inline-start:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .875rem/26px var(--body);text-align:center}
+.steps h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);line-height:26px}
+.steps pre{background:var(--ground);border-radius:8px;padding:10px;font:400 .75rem/1.45 ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;margin:0;max-height:240px}
+.intent{font:700 1rem var(--body);color:var(--accent)}
+.tag{font-size:.6875rem;border:1px solid var(--line);border-radius:99px;padding:1px 8px;color:var(--muted)}
+.toks{display:flex;flex-wrap:wrap;gap:6px}
+.tok{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:.875rem;background:var(--surface)}
+.tok i{font-style:normal;font-size:.625rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tok.k{border-color:var(--accent)}.tok.k i{color:var(--accent)}.tok.s{opacity:.55}
+.meter{position:relative;height:10px;border-radius:5px;background:var(--ground);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.meter span{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.speak{align-items:center;text-align:center}
+.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.badge{font-size:.8125rem;border-radius:99px;padding:3px 12px;border:1px solid var(--line);background:var(--surface)}
+.badge.on{border-color:var(--good);color:var(--good)}.badge.off{color:var(--warn);border-color:var(--warn)}
+.mic{width:132px;height:132px;border-radius:50%;border:0;background:var(--marigold);color:var(--marigold-ink);display:grid;place-items:center;box-shadow:0 0 0 8px color-mix(in srgb,var(--marigold) 22%,transparent)}
+.mic.live{background:var(--bad);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 18px color-mix(in srgb,var(--bad) 18%,transparent)}}
+@media (prefers-reduced-motion:reduce){.mic.live{animation:none}}
+.micstate{font:600 1.125rem/1.3 var(--body);min-height:1.5em}
+.privacy{font-size:.8125rem;color:var(--muted)}
+.typef{display:flex;gap:8px;width:100%}
+input[type=text],input[type=search],input[type=number],textarea{width:100%;min-height:48px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface)}
+textarea{resize:vertical;line-height:1.6}
+.btn{min-height:48px;border-radius:10px;padding:8px 18px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.btn.go{background:var(--accent);color:var(--accent-ink)}.btn.go:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.small{min-height:44px;font-size:.875rem;align-self:center}
+.optrow{width:100%;display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:center;text-align:start;font-size:.875rem;color:var(--muted)}
+.ck{display:flex;align-items:center;gap:8px;min-height:44px}.ck input{width:20px;height:20px;accent-color:var(--accent)}
+.sel{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+select{min-height:44px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--surface);color:var(--ink);font:inherit;max-width:100%}
+audio{width:100%;height:44px}
+.trans{background:var(--surface);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;overflow-wrap:anywhere}
+.trans header{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--accent)}
+.trans .full{font-size:1.0625rem;font-weight:600}
+#say{width:100%;display:flex;flex-direction:column;gap:12px;text-align:start}
+.heard{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.heard p{font-size:1.0625rem;min-width:0;overflow-wrap:anywhere}
+.chipl{font-size:.75rem;background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:2px 10px;white-space:nowrap}
+.reply{background:color-mix(in srgb,var(--good) 12%,var(--surface));border-inline-start:4px solid var(--good);border-radius:8px;padding:10px 12px;font-weight:600;overflow-wrap:anywhere}
+/* the bill slip: confirmation card drawn as a kirana cash memo */
+.slip{background:var(--slip);color:var(--slip-ink);padding:14px 14px 22px;position:relative;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 var(--slip-line)}
+.slip::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:10px;background:linear-gradient(135deg,transparent 75%,var(--ground) 75%) 0 0/14px 10px,linear-gradient(225deg,transparent 75%,var(--ground) 75%) 0 0/14px 10px}
+.slip header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--slip-ink);padding-bottom:6px}
+.slip header b{font:700 1.25rem/1.2 var(--display)}
+.slip header span{font-size:.8125rem;opacity:.75}
+.cols4,.row{display:grid;grid-template-columns:minmax(0,1fr) 104px 56px 64px 32px;gap:6px;align-items:center}
+.cols4{font-size:.6875rem;text-transform:uppercase;letter-spacing:.05em;opacity:.7;padding:6px 0 2px}
+.cols4 span:nth-child(n+2),.row .q,.row .r,.row .a{text-align:center}
+.row{padding:8px 0;border-bottom:1px dashed var(--slip-line)}
+.row .nm{font-weight:600;overflow-wrap:anywhere}.row .nm small{display:block;color:inherit;opacity:.75}
+.row .nm em{font-style:normal;font-weight:400;color:var(--warn)}
+.row.ask{grid-template-columns:1fr;gap:8px}
+.row .opts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.q{display:flex;align-items:center;justify-content:center;gap:4px}
+.st{width:32px;height:32px;border-radius:8px;border:1px solid var(--slip-ink);background:transparent;font-weight:700;line-height:1}
+.x{width:32px;height:32px;border-radius:50%;border:0;background:transparent;font-size:1.25rem;opacity:.7}
+.tot{display:flex;justify-content:space-between;padding:10px 0 4px;font:700 1.125rem var(--body)}
+.acts{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}.acts .btn{flex:1}
+.slip .btn.ghost{border-color:var(--slip-ink);color:var(--slip-ink)}
+.stamp{display:inline-block;margin:10px 0 4px;border:2px solid var(--good);color:var(--good);padding:2px 12px;font-weight:700;transform:rotate(-3deg);border-radius:4px}
+.slip h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;opacity:.7;margin-top:6px}
+.after li{display:flex;justify-content:space-between;gap:10px;padding:4px 0}.neg{color:var(--bad);font-style:normal;font-size:.8125rem}
+.chip{min-height:44px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 14px;text-align:start;line-height:1.35}
+.chip.num{min-width:48px;text-align:center}
+.try{width:100%;text-align:start}.try h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+.chips{display:flex;flex-direction:column;gap:8px}
+.plist,.log{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.plist li,.log li{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center}
+.plist li:last-child,.log li:last-child{border-bottom:0}
+.plist li>div:first-child{min-width:0;display:flex;flex-direction:column}.plist b{overflow-wrap:anywhere}
+.plist li.low{border-inline-start:4px solid var(--warn)}
+.on{display:flex;flex-direction:column;align-items:flex-end;font-variant-numeric:tabular-nums;flex-shrink:0}.on b{font:700 1.375rem/1.1 var(--display)}
+.pill{font-size:.6875rem;border-radius:99px;padding:1px 8px;background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);font-weight:600}
+.pill.in{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.log li{flex-direction:column;align-items:stretch;gap:2px}.log li.void{opacity:.5;text-decoration:line-through}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiles div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column}
+.tiles b{font:700 1.75rem/1.2 var(--display);font-variant-numeric:tabular-nums}
+.addf{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.addf h3,.addf label:first-of-type,.addf .btn{grid-column:1/-1}.addf label{display:flex;flex-direction:column;gap:4px;font-size:.875rem;color:var(--muted)}
+.plist li.teach{flex-direction:column;align-items:stretch}.teachf{display:flex;gap:8px}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:.875rem}
+th,td{text-align:start;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.6875rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr.cur td{background:color-mix(in srgb,var(--marigold) 18%,transparent)}
+.lnk{background:none;border:0;padding:6px 0;min-height:44px;text-align:start}
+#tabs{display:flex;background:var(--surface);border-top:1px solid var(--line);overflow-x:auto}
+#tabs button{flex:1 0 auto;min-width:64px;min-height:56px;padding:6px 10px;border:0;background:none;border-top:3px solid transparent;font-size:.8125rem;font-weight:600;color:var(--muted);position:relative;white-space:nowrap}
+#tabs button.cur{color:var(--accent);border-top-color:var(--marigold)}
+#tabs i{font-style:normal;background:var(--warn);color:#fff;border-radius:99px;font-size:.6875rem;padding:0 6px;margin-inline-start:4px}
+.foot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:center;color:var(--muted);font-size:.8125rem;max-width:560px;margin:0 auto;width:100%}
+.foot button{background:none;border:0;text-decoration:underline;color:inherit;min-height:44px}
+.pick{position:fixed;inset:0;background:var(--sign);color:var(--sign-ink);overflow:auto;z-index:10}
+.pickin{max-width:720px;margin:0 auto;padding:24px 16px 32px;display:flex;flex-direction:column;gap:14px}
+.pick h1{font:700 2rem/1.1 var(--display)}.pick .sub{font-size:1.125rem}
+.pick input{color:#14213D;background:#fff;border:0}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.lgrid button{min-height:72px;border-radius:12px;border:2px solid transparent;background:#fff;color:#14213D;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:8px 14px;text-align:start}
+.lgrid button b{font-size:1.25rem;line-height:1.4}.lgrid button small{color:#566277}
+.lgrid button.cur{border-color:var(--marigold);background:#FFF4C2}
+.pick .btn.ghost{border-color:rgba(255,255,255,.6);color:#fff;align-self:flex-start}
+@media (min-width:960px){
+  .cols{grid-template-columns:minmax(0,560px) minmax(0,1fr);align-items:start}
+  #view>section{margin:0}#how,#how.hidem{display:block;max-width:none;margin:0;position:sticky;top:0}
+  .foot{max-width:none}
+}
+@media (max-width:400px){.cols4,.row{grid-template-columns:minmax(0,1fr) 96px 44px 56px 28px}.mic{width:116px;height:116px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top"><div class="brand"><h1>VyapaarMitra</h1><span class="tagp">Prototype · sample data</span></div><span class="sp"></span><button id="langbtn" data-act="openpick" aria-label="Change language"></button></header>
+  <div class="cols"><main id="view"></main><aside id="how" aria-label="How it understood"></aside>
+    <div class="foot"><span>Technology should adapt to the retailer, not the retailer to the technology.</span><button id="resetbtn" data-act="reset"></button></div></div>
+  <nav id="tabs" aria-label="Sections"></nav>
+</div>
+<div id="picker"></div>
+<script>
+/* VyapaarMitra data: language packs + seed catalogue */
+const UI_KEYS=['t_speak','t_stock','t_today','t_reorder','t_cat','t_lang','tap','listening','type','audio','try','confirm','cancel','undo','which','howmany','repeat','notfound','add','saved','bought','undone','now','left','rate','todaySum','low','order','copy','copied','voiceOk','textOnly','reset','none','search','teach','save','choose','allgood','orderMsg','total','qty','sale','purchase','name','priceL','opening','send','lowCount'];
+const P={};
+P.en={n:'English',e:'English',loc:'en-IN',sc:'Latn',lvl:'Full',fb:['hi'],compound:1,
+num:'1 one|2 two|3 three|4 four|5 five|6 six|7 seven|8 eight|9 nine|10 ten|11 eleven|12 twelve|13 thirteen|14 fourteen|15 fifteen|16 sixteen|17 seventeen|18 eighteen|19 nineteen|20 twenty|30 thirty|40 forty|50 fifty|60 sixty|70 seventy|80 eighty|90 ninety|100 hundred|0.5 half|0.25 quarter',
+k:{sale:'sold sell sale selling',buy:'bought received purchased purchase arrived restock restocked came',stock:'stock left remaining have',price:'price rate cost',sum:'today total summary',reorder:'reorder order',q:'how',and:'and plus',rs:'rupe rs inr',attr:'',stop:'of the a an is are in many much what for to i we you it did does was were there please at each per with my our us me should need'},
+ui:["Speak","Stock","Today","Reorder","Items","Languages","Tap and speak","Listening…","Or type here","Audio is not stored","Try saying","Confirm","Cancel","Undo last entry","Which one?","How many?","Sorry, I did not understand. Please say it again.","Not in the list","Add item","Sale recorded.","Stock added.","Last entry undone.","Stock now","{p}: {n} left","Rate","Today: {n} sales, ₹{v}","Low stock","Order","Copy order for WhatsApp","Copied","Voice + text","Text only in this browser","Reset demo","Nothing yet","Search item","Teach a new name","Save","Choose your language","Nothing to reorder","Namaste, please send:","Total","Qty","Sale","Stock received","Item name","Price","Opening stock","Send","{n} items are low"],
+ex:["sold three ten rupee Maggi and two Coke","how many Maggi are left?","received five cartons of Parle-G","what did we sell today?","what is the price of Coke?","what should I reorder?"]};
+P.hi={n:'हिन्दी',e:'Hindi',loc:'hi-IN',sc:'Deva',lvl:'Full',fb:['en'],
+num:'1 एक ek|2 दो do|3 तीन teen tin|4 चार char chaar|5 पांच पाँच paanch panch|6 छह छः छे chhah chhe chah che|7 सात saat|8 आठ aath|9 नौ nau|10 दस das dus|11 ग्यारह gyarah|12 बारह barah|13 तेरह terah|14 चौदह chaudah|15 पंद्रह पन्द्रह pandrah|16 सोलह solah|17 सत्रह satrah|18 अठारह atharah|19 उन्नीस unnis|20 बीस bees bis|25 पच्चीस pachees pachis|30 तीस tees|40 चालीस chalis chalees|50 पचास pachas|60 साठ saath|70 सत्तर sattar|80 अस्सी assi|90 नब्बे nabbe|100 सौ sau|0.5 आधा aadha adha|1.5 डेढ़ dedh|2.5 ढाई dhai|0.25 पाव paav pav',
+k:{sale:'bech bika biki bike bikri बेच बिक',buy:'aaya aayi aaye kharid आई आयी आया आए आये खरीद',stock:'bachi bacha bache baki baaki बची बचा बचे बाकी स्टॉक स्टाक',price:'daam dam kimat keemat bhav bhaav रेट दाम कीमत भाव',sum:'aaj आज टोटल hisab हिसाब',reorder:'mangwana mangana mangwani mangvana मंगवाना मंगाना मँगवाना ऑर्डर',q:'kitni kitna kitne कितनी कितना कितने',and:'aur और tatha तथा',rs:'rupa rupe rupi rupy रुप रु',attr:'wali wala wale vali vala vale वाली वाला वाले',stop:'ka ki ke ko hai hain ho mein me ne kya de dena dijiye likh likho gaya gayi gaye tha thi the wo woh ye yeh bhai ji का की के को है हैं हो में ने क्या दे देना दीजिए लिख लिखो गया गई गए था थी थे वो वह ये यह भाई जी'},
+ui:["बोलें","स्टॉक","आज","मंगवाना","सामान","भाषाएँ","दबाएँ और बोलें","सुन रहा हूँ…","या यहाँ लिखें","आवाज़ सेव नहीं होती","ऐसे बोलकर देखें","पक्का करें","रद्द करें","पिछली एंट्री हटाएँ","कौन सा?","कितने?","माफ़ कीजिए, समझ नहीं आया। फिर से बोलिए।","सूची में नहीं है","सामान जोड़ें","बिक्री दर्ज हो गई।","स्टॉक जुड़ गया।","पिछली एंट्री हटा दी।","अभी स्टॉक","{p}: {n} बचे हैं","रेट","आज: {n} बिक्री, ₹{v}","स्टॉक कम है","मंगवाएँ","व्हाट्सऐप के लिए ऑर्डर कॉपी करें","कॉपी हो गया","आवाज़ + लिखकर","इस ब्राउज़र में सिर्फ़ लिखकर","डेमो रीसेट करें","अभी कुछ नहीं","सामान खोजें","नया नाम सिखाएँ","सेव करें","अपनी भाषा चुनें","कुछ मंगवाना नहीं है","नमस्ते, कृपया भेजें:","कुल","मात्रा","बिक्री","माल आया","सामान का नाम","दाम","शुरुआती स्टॉक","भेजें","{n} सामान कम हैं"],
+ex:["तीन दस रुपये वाली मैगी और दो कोक बेचे","मैगी कितनी बची है?","पांच पेटी पारले-जी आई","आज कितना बिका?","कोक का रेट क्या है?","क्या मंगवाना है?"]};
+P.hg={n:'Hinglish',e:'Hinglish',loc:'hi-IN',sc:'Latn',lvl:'Full',fb:['hi','en'],num:'',k:{},
+ui:["Bolein","Stock","Aaj","Mangwana","Saamaan","Bhashayein","Dabayein aur bolein","Sun raha hoon…","Ya yahan likhein","Awaaz save nahi hoti","Aise bolkar dekhein","Pakka karein","Cancel","Pichhli entry hatayein","Kaun sa?","Kitne?","Maaf kijiye, samajh nahi aaya. Phir se boliye.","List mein nahi hai","Saamaan jodein","Bikri darj ho gayi.","Stock jud gaya.","Pichhli entry hata di.","Abhi stock","{p}: {n} bache hain","Rate","Aaj: {n} bikri, ₹{v}","Stock kam hai","Mangwayein","WhatsApp ke liye order copy karein","Copy ho gaya","Awaaz + likhkar","Is browser mein sirf likhkar","Demo reset karein","Abhi kuch nahi","Saamaan khojein","Naya naam sikhayein","Save karein","Apni bhasha chunein","Kuch mangwana nahi hai","Namaste, kripya bhejein:","Total","Matra","Bikri","Maal aaya","Saamaan ka naam","Daam","Shuruaati stock","Bhejein","{n} saamaan kam hain"],
+ex:["Mitra, teen das rupaye wali Maggi aur do Coke beche","Maggi kitni bachi hai?","paanch peti Parle-G aayi","aaj kitna bika?","Coke ka rate kya hai?","kya mangwana hai?"]};
+P.bn={n:'বাংলা',e:'Bengali',loc:'bn-IN',sc:'Beng',lvl:'Full',fb:[],cls:'টা টি টে টো খানা ta ti te to',
+num:'1 এক ek|2 দুই দু dui du|3 তিন tin|4 চার char|5 পাঁচ panch|6 ছয় chhoy choy|7 সাত saat sat|8 আট aat|9 নয় noy|10 দশ dosh dos|11 এগারো egaro|12 বারো baro|15 পনেরো ponero|20 কুড়ি বিশ kuri bish|25 পঁচিশ pochish|30 তিরিশ tirish|40 চল্লিশ chollish|50 পঞ্চাশ ponchash|100 একশো শো eksho|0.5 আধ আধা adha',
+k:{sale:'bikri bechechi bechlam beche বিক্রি বেচ',buy:'eseche esechhe elo kinechi kinlam এসেছে এলো এল কিনেছি কিনলাম',stock:'ache achhe baki আছে বাকি স্টক',price:'dam daam dor দাম দর রেট',sum:'aaj aj আজ mot মোট hisab হিসাব',reorder:'anate অর্ডার আনতে',q:'koto kota koyta কত কটা কয়টা',and:'ar ebong আর এবং ও',rs:'taka টাকা rupi',attr:'ওয়ালা',stop:'hoyeche hoyechhe holo ki ta হয়েছে হলো হল কি দাও din দিন'},
+ui:["বলুন","স্টক","আজ","অর্ডার","জিনিস","ভাষা","টিপে বলুন","শুনছি…","অথবা এখানে লিখুন","অডিও সেভ হয় না","এভাবে বলে দেখুন","নিশ্চিত করুন","বাতিল","শেষ এন্ট্রি মুছুন","কোনটা?","কতগুলো?","দুঃখিত, বুঝতে পারিনি। আবার বলুন।","তালিকায় নেই","জিনিস যোগ করুন","বিক্রি লেখা হয়েছে।","স্টক যোগ হয়েছে।","শেষ এন্ট্রি মুছে দেওয়া হয়েছে।","এখন স্টক","{p}: {n}টি আছে","দাম","আজ: {n}টি বিক্রি, ₹{v}","স্টক কম","আনতে হবে","হোয়াটসঅ্যাপের জন্য অর্ডার কপি করুন","কপি হয়েছে","ভয়েস + লেখা","এই ব্রাউজারে শুধু লেখা","ডেমো রিসেট","এখনও কিছু নেই","জিনিস খুঁজুন","নতুন নাম শেখান","সেভ করুন","আপনার ভাষা বেছে নিন","কিছু আনতে হবে না","নমস্কার, দয়া করে পাঠান:","মোট","পরিমাণ","বিক্রি","মাল এসেছে","জিনিসের নাম","দাম","শুরুর স্টক","পাঠান","{n}টি জিনিস কম"],
+ex:["তিনটে দশ টাকার ম্যাগি আর দুটো কোক বিক্রি হয়েছে","ম্যাগি কত আছে?","পাঁচ পেটি পার্লে-জি এসেছে","আজ কত বিক্রি হলো?","tinte Maggi ar duto Coke bikri hoyeche"]};
+P.mr={n:'मराठी',e:'Marathi',loc:'mr-IN',sc:'Deva',lvl:'Full',fb:[],
+num:'1 एक ek|2 दोन don|3 तीन teen|4 चार char|5 पाच paach pach|6 सहा saha|7 सात saat|8 आठ aath|9 नऊ nau|10 दहा daha|11 अकरा akra|12 बारा bara|15 पंधरा pandhra|20 वीस vees|25 पंचवीस panchvis|30 तीस tees|40 चाळीस chalis|50 पन्नास pannas|100 शंभर shambhar|0.5 अर्धा ardha',
+k:{sale:'vikle vikla vikli vikale vikri विक',buy:'ale aale aali ala ghetle आले आली आला घेतले खरेदी',stock:'shillak baki urle urla शिल्लक बाकी उरले उरला स्टॉक',price:'kimmat bhav dar किंमत भाव दर रेट',sum:'aaj आज ekun एकूण hishob हिशोब',reorder:'magvayche magvaycha मागवायचे मागवायचं ऑर्डर',q:'kiti किती',and:'ani aani आणि व',rs:'rupa रुपय',attr:'wali vali wala वाली वाला',stop:'ahe ahet kay आहे आहेत काय द्या dya'},
+ui:["बोला","स्टॉक","आज","मागवा","माल","भाषा","दाबा आणि बोला","ऐकत आहे…","किंवा इथे लिहा","आवाज साठवला जात नाही","असे बोलून पहा","पक्के करा","रद्द करा","शेवटची नोंद काढा","कोणते?","किती?","माफ करा, समजले नाही. पुन्हा बोला.","यादीत नाही","माल जोडा","विक्री नोंदवली.","स्टॉक वाढवला.","शेवटची नोंद काढली.","आताचा स्टॉक","{p}: {n} शिल्लक","दर","आज: {n} विक्री, ₹{v}","स्टॉक कमी","मागवा","व्हॉट्सअ‍ॅपसाठी ऑर्डर कॉपी करा","कॉपी झाले","आवाज + लिहून","या ब्राउझरमध्ये फक्त लिहून","डेमो रीसेट करा","अजून काही नाही","माल शोधा","नवीन नाव शिकवा","सेव्ह करा","तुमची भाषा निवडा","काही मागवायचे नाही","नमस्कार, कृपया पाठवा:","एकूण","नग","विक्री","माल आला","मालाचे नाव","किंमत","सुरुवातीचा स्टॉक","पाठवा","{n} वस्तू कमी आहेत"],
+ex:["तीन दहा रुपयाची मॅगी आणि दोन कोक विकले","मॅगी किती शिल्लक आहे?","पाच पेटी पार्ले-जी आले","आज किती विकले?","teen Maggi ani don Coke vikle"]};
+P.ta={n:'தமிழ்',e:'Tamil',loc:'ta-IN',sc:'Taml',lvl:'Full',fb:[],compound:1,
+num:'1 ஒன்று ஒரு onru oru onnu|2 இரண்டு ரெண்டு irandu rendu|3 மூன்று மூணு moonru moonu munu|4 நான்கு நாலு naangu naalu nalu|5 ஐந்து அஞ்சு aindhu anju|6 ஆறு aaru|7 ஏழு ezhu elu|8 எட்டு ettu|9 ஒன்பது onbadhu onpathu|10 பத்து pathu patthu|11 பதினொன்று pathinonru|12 பன்னிரண்டு pannirandu|15 பதினைந்து pathinainthu|20 இருபது irubadhu irupathu|30 முப்பது muppadhu|40 நாற்பது naarpadhu|50 ஐம்பது aimbadhu|100 நூறு nooru|0.5 அரை arai',
+k:{sale:'vitren vitten vitthen vitrom vittachu vitrathu விற் வித்த',buy:'vandhadhu vanthathu vandhuchu vanginen வந்தது வந்துச்சு வாங்கினேன்',stock:'irukku irukkudhu iruppu meedhi இருக்கு இருக்கிறது இருப்பு மீதி ஸ்டாக்',price:'vilai விலை ரேட்',sum:'indru innaikku inniku இன்று இன்னைக்கு மொத்தம் motham',reorder:'ஆர்டர் vaanganum வாங்கணும்',q:'evvalavu ethanai எவ்வளவு எத்தனை',and:'matrum mattrum மற்றும்',rs:'rooba rubai roobai rupai ரூபா',attr:'',stop:'enna என்ன kodu கொடு'},
+ui:["பேசுங்கள்","ஸ்டாக்","இன்று","ஆர்டர்","பொருட்கள்","மொழிகள்","அழுத்தி பேசுங்கள்","கேட்கிறேன்…","அல்லது இங்கே எழுதுங்கள்","குரல் சேமிக்கப்படாது","இப்படி சொல்லிப் பாருங்கள்","உறுதி செய்","ரத்து செய்","கடைசி பதிவை நீக்கு","எது?","எத்தனை?","மன்னிக்கவும், புரியவில்லை. மீண்டும் சொல்லுங்கள்.","பட்டியலில் இல்லை","பொருள் சேர்","விற்பனை பதிவானது.","ஸ்டாக் சேர்க்கப்பட்டது.","கடைசி பதிவு நீக்கப்பட்டது.","இப்போது ஸ்டாக்","{p}: {n} உள்ளது","விலை","இன்று: {n} விற்பனை, ₹{v}","ஸ்டாக் குறைவு","வாங்க வேண்டும்","வாட்ஸ்அப்புக்கு ஆர்டரை நகலெடு","நகலெடுக்கப்பட்டது","குரல் + எழுத்து","இந்த உலாவியில் எழுத்து மட்டும்","டெமோவை மீட்டமை","இன்னும் எதுவும் இல்லை","பொருளைத் தேடு","புதிய பெயர் கற்றுக்கொடு","சேமி","உங்கள் மொழியைத் தேர்ந்தெடுங்கள்","வாங்க எதுவும் இல்லை","வணக்கம், தயவுசெய்து அனுப்புங்கள்:","மொத்தம்","அளவு","விற்பனை","சரக்கு வந்தது","பொருளின் பெயர்","விலை","தொடக்க ஸ்டாக்","அனுப்பு","{n} பொருட்கள் குறைவு"],
+ex:["மூன்று பத்து ரூபாய் மேகி மற்றும் இரண்டு கோக் விற்றேன்","மேகி எவ்வளவு இருக்கு?","ஐந்து பெட்டி பார்லே-ஜி வந்தது","இன்று எவ்வளவு விற்றது?","moonu Maggi matrum rendu Coke vitten"]};
+P.te={n:'తెలుగు',e:'Telugu',loc:'te-IN',sc:'Telu',lvl:'Full',fb:[],compound:1,
+num:'1 ఒకటి ఒక okati oka|2 రెండు rendu|3 మూడు moodu mudu|4 నాలుగు naalugu nalugu|5 ఐదు aidu|6 ఆరు aaru|7 ఏడు edu|8 ఎనిమిది enimidi|9 తొమ్మిది tommidi|10 పది padi|11 పదకొండు padakondu|12 పన్నెండు pannendu|15 పదిహేను padihenu|20 ఇరవై iravai|30 ముప్పై muppai|40 నలభై nalabhai|50 యాభై yabhai|100 వంద vanda|0.5 అర ara',
+k:{sale:'ammanu ammamu ammesanu ammina అమ్మ',buy:'vachindi vachayi konnanu వచ్చింది వచ్చాయి కొన్నాను',stock:'undi unnayi migilindi ఉంది ఉన్నాయి మిగిలింది స్టాక్',price:'dhara ధర రేటు',sum:'eeroju ivala ఈరోజు ఇవాళ mottam మొత్తం',reorder:'ఆర్డర్ teppinchali తెప్పించాలి',q:'enni enta ఎన్ని ఎంత',and:'mariyu మరియు',rs:'rupayala rupayalu rupayi రూపాయ',attr:'',stop:'emi ఏమి ఇవ్వు ivvu'},
+ui:["మాట్లాడండి","స్టాక్","ఈరోజు","ఆర్డర్","వస్తువులు","భాషలు","నొక్కి మాట్లాడండి","వింటున్నాను…","లేదా ఇక్కడ టైప్ చేయండి","ఆడియో సేవ్ కాదు","ఇలా చెప్పి చూడండి","నిర్ధారించు","రద్దు","చివరి ఎంట్రీ తీసివేయి","ఏది?","ఎన్ని?","క్షమించండి, అర్థం కాలేదు. మళ్ళీ చెప్పండి.","జాబితాలో లేదు","వస్తువు చేర్చు","అమ్మకం నమోదైంది.","స్టాక్ చేరింది.","చివరి ఎంట్రీ తీసివేయబడింది.","ఇప్పుడు స్టాక్","{p}: {n} ఉన్నాయి","ధర","ఈరోజు: {n} అమ్మకాలు, ₹{v}","స్టాక్ తక్కువ","తెప్పించాలి","వాట్సాప్ కోసం ఆర్డర్ కాపీ చేయి","కాపీ అయింది","వాయిస్ + టెక్స్ట్","ఈ బ్రౌజర్‌లో టెక్స్ట్ మాత్రమే","డెమో రీసెట్","ఇంకా ఏమీ లేదు","వస్తువు వెతుకు","కొత్త పేరు నేర్పు","సేవ్ చేయి","మీ భాషను ఎంచుకోండి","తెప్పించాల్సింది ఏమీ లేదు","నమస్తే, దయచేసి పంపండి:","మొత్తం","సంఖ్య","అమ్మకం","సరుకు వచ్చింది","వస్తువు పేరు","ధర","ప్రారంభ స్టాక్","పంపు","{n} వస్తువులు తక్కువగా ఉన్నాయి"],
+ex:["మూడు పది రూపాయల మ్యాగీ, రెండు కోక్ అమ్మాను","మ్యాగీ ఎన్ని ఉన్నాయి?","ఐదు పెట్టెలు పార్లే-జి వచ్చాయి","ఈరోజు ఎంత అమ్మాము?","moodu Maggi mariyu rendu Coke ammanu"]};
+P.gu={n:'ગુજરાતી',e:'Gujarati',loc:'gu-IN',sc:'Gujr',lvl:'Full',fb:[],
+num:'1 એક ek|2 બે be|3 ત્રણ tran|4 ચાર char|5 પાંચ panch|6 છ chha|7 સાત saat|8 આઠ aath|9 નવ nav|10 દસ das|11 અગિયાર agiyar|12 બાર|15 પંદર pandar|20 વીસ vis|25 પચ્ચીસ pachis|30 ત્રીસ tris|40 ચાલીસ chalis|50 પચાસ pachas|100 સો|0.5 અડધો adadho',
+k:{sale:'vechya vechyu vechi વેચ',buy:'aavya aavyu kharidyu આવ્યા આવ્યું આવી ખરીદ્યું',stock:'bachyu baki બચ્યું બાકી સ્ટોક',price:'bhav kimat ભાવ કિંમત રેટ',sum:'aaje આજે kul કુલ',reorder:'ઓર્ડર mangavvu મંગાવવું મંગાવવાનું',q:'ketla ketli ketlu કેટલા કેટલી કેટલું',and:'ane અને',rs:'rupiya રૂપિયા',attr:'wali vali વાળી વાળા વાળું',stop:'chhe shu છે શું આપો aapo'},
+ui:["બોલો","સ્ટોક","આજે","મંગાવો","માલ","ભાષાઓ","દબાવો અને બોલો","સાંભળું છું…","અથવા અહીં લખો","અવાજ સેવ થતો નથી","આમ બોલી જુઓ","પાકું કરો","રદ કરો","છેલ્લી એન્ટ્રી કાઢો","કયું?","કેટલા?","માફ કરશો, સમજાયું નહીં. ફરી બોલો.","યાદીમાં નથી","માલ ઉમેરો","વેચાણ નોંધાયું.","સ્ટોક ઉમેરાયો.","છેલ્લી એન્ટ્રી કાઢી નાખી.","હાલનો સ્ટોક","{p}: {n} બાકી","ભાવ","આજે: {n} વેચાણ, ₹{v}","સ્ટોક ઓછો","મંગાવો","વોટ્સએપ માટે ઓર્ડર કોપી કરો","કોપી થયું","અવાજ + લખાણ","આ બ્રાઉઝરમાં ફક્ત લખાણ","ડેમો રીસેટ કરો","હજી કંઈ નથી","માલ શોધો","નવું નામ શીખવો","સેવ કરો","તમારી ભાષા પસંદ કરો","કંઈ મંગાવવાનું નથી","નમસ્તે, કૃપા કરીને મોકલો:","કુલ","નંગ","વેચાણ","માલ આવ્યો","માલનું નામ","ભાવ","શરૂઆતનો સ્ટોક","મોકલો","{n} વસ્તુ ઓછી છે"],
+ex:["ત્રણ દસ રૂપિયાની મેગી અને બે કોક વેચ્યા","મેગી કેટલી બાકી છે?","પાંચ પેટી પાર્લે-જી આવ્યા","આજે કેટલું વેચ્યું?","tran Maggi ane be Coke vechya"]};
+P.kn={n:'ಕನ್ನಡ',e:'Kannada',loc:'kn-IN',sc:'Knda',lvl:'Full',fb:[],compound:1,
+num:'1 ಒಂದು ondu|2 ಎರಡು eradu|3 ಮೂರು mooru muru|4 ನಾಲ್ಕು naalku nalku|5 ಐದು aidu|6 ಆರು aaru|7 ಏಳು elu|8 ಎಂಟು entu|9 ಒಂಬತ್ತು ombattu|10 ಹತ್ತು hattu|11 ಹನ್ನೊಂದು hannondu|12 ಹನ್ನೆರಡು hanneradu|15 ಹದಿನೈದು hadinaidu|20 ಇಪ್ಪತ್ತು ippattu|30 ಮೂವತ್ತು moovattu|40 ನಲವತ್ತು nalavattu|50 ಐವತ್ತು aivattu|100 ನೂರು nooru|0.5 ಅರ್ಧ ardha',
+k:{sale:'maaride maridevu maarata ಮಾರ',buy:'bantu bandide kondide ಬಂತು ಬಂದಿದೆ ಕೊಂಡೆ',stock:'ide ulide ಇದೆ ಉಳಿದಿದೆ ಸ್ಟಾಕ್',price:'bele ಬೆಲೆ ರೇಟ್',sum:'indu ivattu ಇಂದು ಇವತ್ತು ottu ಒಟ್ಟು',reorder:'ಆರ್ಡರ್ tarisabeku ತರಿಸಬೇಕು',q:'eshtu ಎಷ್ಟು',and:'mattu ಮತ್ತು',rs:'rupayi ರೂಪಾಯಿ',attr:'',stop:'enu ಏನು ಕೊಡಿ kodi'},
+ui:["ಮಾತನಾಡಿ","ಸ್ಟಾಕ್","ಇಂದು","ಆರ್ಡರ್","ವಸ್ತುಗಳು","ಭಾಷೆಗಳು","ಒತ್ತಿ ಮಾತನಾಡಿ","ಕೇಳುತ್ತಿದ್ದೇನೆ…","ಅಥವಾ ಇಲ್ಲಿ ಬರೆಯಿರಿ","ಧ್ವನಿ ಉಳಿಸುವುದಿಲ್ಲ","ಹೀಗೆ ಹೇಳಿ ನೋಡಿ","ಖಚಿತಪಡಿಸಿ","ರದ್ದುಮಾಡಿ","ಕೊನೆಯ ನಮೂದು ತೆಗೆಯಿರಿ","ಯಾವುದು?","ಎಷ್ಟು?","ಕ್ಷಮಿಸಿ, ಅರ್ಥವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಹೇಳಿ.","ಪಟ್ಟಿಯಲ್ಲಿ ಇಲ್ಲ","ವಸ್ತು ಸೇರಿಸಿ","ಮಾರಾಟ ದಾಖಲಾಗಿದೆ.","ಸ್ಟಾಕ್ ಸೇರಿಸಲಾಗಿದೆ.","ಕೊನೆಯ ನಮೂದು ತೆಗೆಯಲಾಗಿದೆ.","ಈಗಿನ ಸ್ಟಾಕ್","{p}: {n} ಇದೆ","ಬೆಲೆ","ಇಂದು: {n} ಮಾರಾಟ, ₹{v}","ಸ್ಟಾಕ್ ಕಡಿಮೆ","ತರಿಸಿ","ವಾಟ್ಸಾಪ್‌ಗಾಗಿ ಆರ್ಡರ್ ನಕಲಿಸಿ","ನಕಲಾಗಿದೆ","ಧ್ವನಿ + ಬರಹ","ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಬರಹ ಮಾತ್ರ","ಡೆಮೊ ರೀಸೆಟ್","ಇನ್ನೂ ಏನೂ ಇಲ್ಲ","ವಸ್ತು ಹುಡುಕಿ","ಹೊಸ ಹೆಸರು ಕಲಿಸಿ","ಉಳಿಸಿ","ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ","ತರಿಸಲು ಏನೂ ಇಲ್ಲ","ನಮಸ್ತೆ, ದಯವಿಟ್ಟು ಕಳುಹಿಸಿ:","ಒಟ್ಟು","ಸಂಖ್ಯೆ","ಮಾರಾಟ","ಸರಕು ಬಂದಿದೆ","ವಸ್ತುವಿನ ಹೆಸರು","ಬೆಲೆ","ಆರಂಭಿಕ ಸ್ಟಾಕ್","ಕಳುಹಿಸಿ","{n} ವಸ್ತುಗಳು ಕಡಿಮೆ ಇವೆ"],
+ex:["ಮೂರು ಹತ್ತು ರೂಪಾಯಿ ಮ್ಯಾಗಿ ಮತ್ತು ಎರಡು ಕೋಕ್ ಮಾರಿದೆ","ಮ್ಯಾಗಿ ಎಷ್ಟು ಇದೆ?","ಐದು ಪೆಟ್ಟಿಗೆ ಪಾರ್ಲೆ-ಜಿ ಬಂತು","ಇಂದು ಎಷ್ಟು ಮಾರಾಟ?","mooru Maggi mattu eradu Coke maaride"]};
+P.ml={n:'മലയാളം',e:'Malayalam',loc:'ml-IN',sc:'Mlym',lvl:'Full',fb:[],compound:1,
+num:'1 ഒന്ന് ഒരു onnu oru|2 രണ്ട് randu|3 മൂന്ന് moonnu moonu|4 നാല് naalu nalu|5 അഞ്ച് anchu anju|6 ആറ് aaru|7 ഏഴ് ezhu|8 എട്ട് ettu|9 ഒമ്പത് ombathu onpathu|10 പത്ത് pathu|11 പതിനൊന്ന് pathinonnu|12 പന്ത്രണ്ട് panthrandu|15 പതിനഞ്ച് pathinanchu|20 ഇരുപത് irupathu|30 മുപ്പത് muppathu|40 നാല്പത് nalpathu|50 അമ്പത് ambathu|100 നൂറ് nooru|0.5 അര ara',
+k:{sale:'vittu vittathu vilpana വിറ്റ വിൽപ്പന',buy:'vannu vangi vaangi വന്നു വാങ്ങി',stock:'undu baakki ഉണ്ട് ബാക്കി സ്റ്റോക്ക്',price:'vila വില റേറ്റ്',sum:'innu ഇന്ന് aake ആകെ motham മൊത്തം',reorder:'ഓർഡർ vaanganam വാങ്ങണം',q:'ethra എത്ര',and:'pinne പിന്നെ',rs:'roopa രൂപ',attr:'',stop:'enthu എന്ത് tharu തരൂ'},
+ui:["സംസാരിക്കൂ","സ്റ്റോക്ക്","ഇന്ന്","ഓർഡർ","സാധനങ്ങൾ","ഭാഷകൾ","അമർത്തി സംസാരിക്കൂ","കേൾക്കുന്നു…","അല്ലെങ്കിൽ ഇവിടെ എഴുതൂ","ശബ്ദം സേവ് ചെയ്യില്ല","ഇങ്ങനെ പറഞ്ഞു നോക്കൂ","ഉറപ്പിക്കൂ","റദ്ദാക്കൂ","അവസാന എൻട്രി നീക്കൂ","ഏത്?","എത്ര?","ക്ഷമിക്കണം, മനസ്സിലായില്ല. വീണ്ടും പറയൂ.","പട്ടികയിൽ ഇല്ല","സാധനം ചേർക്കൂ","വിൽപ്പന രേഖപ്പെടുത്തി.","സ്റ്റോക്ക് ചേർത്തു.","അവസാന എൻട്രി നീക്കി.","ഇപ്പോഴത്തെ സ്റ്റോക്ക്","{p}: {n} ഉണ്ട്","വില","ഇന്ന്: {n} വിൽപ്പന, ₹{v}","സ്റ്റോക്ക് കുറവ്","വാങ്ങണം","വാട്സ്ആപ്പിനായി ഓർഡർ കോപ്പി ചെയ്യൂ","കോപ്പി ചെയ്തു","ശബ്ദം + എഴുത്ത്","ഈ ബ്രൗസറിൽ എഴുത്ത് മാത്രം","ഡെമോ റീസെറ്റ്","ഇതുവരെ ഒന്നുമില്ല","സാധനം തിരയൂ","പുതിയ പേര് പഠിപ്പിക്കൂ","സേവ് ചെയ്യൂ","നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കൂ","വാങ്ങാൻ ഒന്നുമില്ല","നമസ്കാരം, ദയവായി അയയ്ക്കൂ:","ആകെ","എണ്ണം","വിൽപ്പന","ചരക്ക് വന്നു","സാധനത്തിന്റെ പേര്","വില","തുടക്ക സ്റ്റോക്ക്","അയയ്ക്കൂ","{n} സാധനങ്ങൾ കുറവാണ്"],
+ex:["മൂന്ന് പത്ത് രൂപ മാഗി, രണ്ട് കോക്ക് വിറ്റു","മാഗി എത്ര ഉണ്ട്?","അഞ്ച് പെട്ടി പാർലെ-ജി വന്നു","ഇന്ന് എത്ര വിറ്റു?","moonnu Maggi, randu Coke vittu"]};
+P.pa={n:'ਪੰਜਾਬੀ',e:'Punjabi',loc:'pa-Guru-IN',sc:'Guru',lvl:'Full',fb:['hi'],
+num:'1 ਇੱਕ ਇਕ ikk ik|2 ਦੋ do|3 ਤਿੰਨ tinn tin|4 ਚਾਰ char|5 ਪੰਜ panj|6 ਛੇ chhe|7 ਸੱਤ satt|8 ਅੱਠ atth ath|9 ਨੌਂ ਨੌ nau|10 ਦਸ das|11 ਗਿਆਰਾਂ giaran|12 ਬਾਰਾਂ baran|15 ਪੰਦਰਾਂ pandran|20 ਵੀਹ vih veeh|25 ਪੱਚੀ pachhi|30 ਤੀਹ tih|40 ਚਾਲੀ chali|50 ਪੰਜਾਹ panjah|100 ਸੌ sau|0.5 ਅੱਧਾ addha',
+k:{sale:'vechia veche vechi vikri ਵੇਚ ਵਿਕ',buy:'aaya aayi aaye kharide ਆਇਆ ਆਈ ਆਏ ਖਰੀਦੇ',stock:'bachi bacheya baki ਬਚੀ ਬਚਿਆ ਬਚੇ ਬਾਕੀ ਸਟਾਕ',price:'kimat bhaa ਰੇਟ ਕੀਮਤ ਭਾਅ',sum:'ajj ਅੱਜ kul ਕੁੱਲ',reorder:'ਆਰਡਰ mangvauna ਮੰਗਵਾਉਣਾ',q:'kinni kinne kinna ਕਿੰਨੀ ਕਿੰਨੇ ਕਿੰਨਾ',and:'te ate ਤੇ ਅਤੇ',rs:'rupa ਰੁਪ',attr:'wali wala ਵਾਲੀ ਵਾਲਾ ਵਾਲੇ',stop:'ki hai ਕੀ ਹੈ ਦਾ ਦੀ ਦੇ da di ਦਿਓ'},
+ui:["ਬੋਲੋ","ਸਟਾਕ","ਅੱਜ","ਮੰਗਵਾਓ","ਸਮਾਨ","ਭਾਸ਼ਾਵਾਂ","ਦਬਾਓ ਤੇ ਬੋਲੋ","ਸੁਣ ਰਿਹਾ ਹਾਂ…","ਜਾਂ ਇੱਥੇ ਲਿਖੋ","ਆਵਾਜ਼ ਸੇਵ ਨਹੀਂ ਹੁੰਦੀ","ਇਸ ਤਰ੍ਹਾਂ ਬੋਲ ਕੇ ਦੇਖੋ","ਪੱਕਾ ਕਰੋ","ਰੱਦ ਕਰੋ","ਪਿਛਲੀ ਐਂਟਰੀ ਹਟਾਓ","ਕਿਹੜਾ?","ਕਿੰਨੇ?","ਮਾਫ਼ ਕਰਨਾ, ਸਮਝ ਨਹੀਂ ਆਇਆ। ਦੁਬਾਰਾ ਬੋਲੋ।","ਸੂਚੀ ਵਿੱਚ ਨਹੀਂ ਹੈ","ਸਮਾਨ ਜੋੜੋ","ਵਿਕਰੀ ਦਰਜ ਹੋ ਗਈ।","ਸਟਾਕ ਜੁੜ ਗਿਆ।","ਪਿਛਲੀ ਐਂਟਰੀ ਹਟਾ ਦਿੱਤੀ।","ਹੁਣ ਸਟਾਕ","{p}: {n} ਬਚੇ ਹਨ","ਰੇਟ","ਅੱਜ: {n} ਵਿਕਰੀ, ₹{v}","ਸਟਾਕ ਘੱਟ ਹੈ","ਮੰਗਵਾਓ","ਵਟਸਐਪ ਲਈ ਆਰਡਰ ਕਾਪੀ ਕਰੋ","ਕਾਪੀ ਹੋ ਗਿਆ","ਆਵਾਜ਼ + ਲਿਖ ਕੇ","ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਸਿਰਫ਼ ਲਿਖ ਕੇ","ਡੈਮੋ ਰੀਸੈੱਟ ਕਰੋ","ਹਾਲੇ ਕੁਝ ਨਹੀਂ","ਸਮਾਨ ਲੱਭੋ","ਨਵਾਂ ਨਾਮ ਸਿਖਾਓ","ਸੇਵ ਕਰੋ","ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ","ਕੁਝ ਮੰਗਵਾਉਣਾ ਨਹੀਂ","ਨਮਸਕਾਰ, ਕਿਰਪਾ ਕਰਕੇ ਭੇਜੋ:","ਕੁੱਲ","ਗਿਣਤੀ","ਵਿਕਰੀ","ਮਾਲ ਆਇਆ","ਸਮਾਨ ਦਾ ਨਾਮ","ਕੀਮਤ","ਸ਼ੁਰੂਆਤੀ ਸਟਾਕ","ਭੇਜੋ","{n} ਚੀਜ਼ਾਂ ਘੱਟ ਹਨ"],
+ex:["ਤਿੰਨ ਦਸ ਰੁਪਏ ਵਾਲੀ ਮੈਗੀ ਤੇ ਦੋ ਕੋਕ ਵੇਚੇ","ਮੈਗੀ ਕਿੰਨੀ ਬਚੀ ਹੈ?","ਪੰਜ ਪੇਟੀ ਪਾਰਲੇ-ਜੀ ਆਈ","ਅੱਜ ਕਿੰਨਾ ਵਿਕਿਆ?"]};
+P.or={n:'ଓଡ଼ିଆ',e:'Odia',loc:'or-IN',sc:'Orya',lvl:'Full',fb:[],cls:'ଟା ଟି ta ti',
+num:'1 ଏକ eka ek|2 ଦୁଇ dui|3 ତିନି tini|4 ଚାରି chari|5 ପାଞ୍ଚ pancha panch|6 ଛଅ chha|7 ସାତ sata saat|8 ଆଠ atha aath|9 ନଅ nau|10 ଦଶ dasha das|11 ଏଗାର egara|12 ବାର bara|15 ପନ୍ଦର pandara|20 କୋଡ଼ିଏ kodie|25 ପଚିଶ pachisha|30 ତିରିଶ tirisha|40 ଚାଳିଶ chalisha|50 ପଚାଶ pachasha|100 ଶହେ shahe|0.5 ଅଧା adha',
+k:{sale:'bikri bikili bikichi ବିକ',buy:'asila asichi kinili ଆସିଲା ଆସିଛି କିଣିଲି',stock:'achhi baki ଅଛି ବାକି ଷ୍ଟକ',price:'dama dara ଦାମ ଦର ରେଟ',sum:'aji ଆଜି mota ମୋଟ',reorder:'ଅର୍ଡର mangaibaku ମଗାଇବାକୁ',q:'kete ketoti କେତେ କେତୋଟି',and:'au ebam ଓ ଆଉ ଏବଂ',rs:'tanka ଟଙ୍କା',attr:'',stop:'kana hela କଣ ହେଲା ଦିଅ'},
+ui:["କୁହନ୍ତୁ","ଷ୍ଟକ","ଆଜି","ଅର୍ଡର","ଜିନିଷ","ଭାଷା","ଦବାଇ କୁହନ୍ତୁ","ଶୁଣୁଛି…","କିମ୍ବା ଏଠାରେ ଲେଖନ୍ତୁ","ଅଡିଓ ସେଭ ହୁଏ ନାହିଁ","ଏମିତି କହି ଦେଖନ୍ତୁ","ନିଶ୍ଚିତ କରନ୍ତୁ","ବାତିଲ","ଶେଷ ଏଣ୍ଟ୍ରି ହଟାନ୍ତୁ","କେଉଁଟା?","କେତୋଟି?","କ୍ଷମା କରନ୍ତୁ, ବୁଝିପାରିଲି ନାହିଁ। ପୁଣି କୁହନ୍ତୁ।","ତାଲିକାରେ ନାହିଁ","ଜିନିଷ ଯୋଡ଼ନ୍ତୁ","ବିକ୍ରି ଲେଖାଗଲା।","ଷ୍ଟକ ଯୋଡ଼ାଗଲା।","ଶେଷ ଏଣ୍ଟ୍ରି ହଟାଗଲା।","ଏବେ ଷ୍ଟକ","{p}: {n}ଟି ଅଛି","ଦର","ଆଜି: {n}ଟି ବିକ୍ରି, ₹{v}","ଷ୍ଟକ କମ୍","ମଗାନ୍ତୁ","ହ୍ୱାଟସଆପ ପାଇଁ ଅର୍ଡର କପି କରନ୍ତୁ","କପି ହେଲା","ସ୍ୱର + ଲେଖା","ଏହି ବ୍ରାଉଜରରେ କେବଳ ଲେଖା","ଡେମୋ ରିସେଟ","ଏଯାଏଁ କିଛି ନାହିଁ","ଜିନିଷ ଖୋଜନ୍ତୁ","ନୂଆ ନାଁ ଶିଖାନ୍ତୁ","ସେଭ କରନ୍ତୁ","ଆପଣଙ୍କ ଭାଷା ବାଛନ୍ତୁ","କିଛି ମଗାଇବାକୁ ନାହିଁ","ନମସ୍କାର, ଦୟାକରି ପଠାନ୍ତୁ:","ମୋଟ","ପରିମାଣ","ବିକ୍ରି","ମାଲ ଆସିଲା","ଜିନିଷର ନାଁ","ଦାମ","ଆରମ୍ଭ ଷ୍ଟକ","ପଠାନ୍ତୁ","{n}ଟି ଜିନିଷ କମ୍ ଅଛି"],
+ex:["ତିନିଟା ଦଶ ଟଙ୍କାର ମ୍ୟାଗି ଓ ଦୁଇଟା କୋକ ବିକ୍ରି ହେଲା","ମ୍ୟାଗି କେତେ ଅଛି?","ପାଞ୍ଚ ପେଟି ପାର୍ଲେ-ଜି ଆସିଲା","ଆଜି କେତେ ବିକ୍ରି ହେଲା?"]};
+P.as={n:'অসমীয়া',e:'Assamese',loc:'as-IN',sc:'Beng',lvl:'Full',fb:['bn'],cls:'টা টি খন ta',
+num:'1 এক ek|2 দুই দু dui du|3 তিনি tini|4 চাৰি sari chari|5 পাঁচ pas panch|6 ছয় soy|7 সাত xat|8 আঠ ath|9 ন no|10 দহ doh|11 এঘাৰ egharo|12 বাৰ baro|15 পোন্ধৰ pondhoro|20 বিশ bix|30 ত্ৰিশ trix|40 চল্লিশ|50 পঞ্চাশ|100 এশ exo|0.5 আধা',
+k:{sale:'bikri besilu besilo বিক্ৰ বেচ',buy:'ahil ahise kinilu আহিল আহিছে কিনিলোঁ',stock:'ase baki আছে বাকী ষ্টক',price:'dam dor দাম দৰ',sum:'aji আজি mut মুঠ',reorder:'অৰ্ডাৰ anibo আনিব',q:'kiman কিমান',and:'aru আৰু',rs:'toka টকা',attr:'',stop:"ki hol কি হল হ'ল দিয়ক"},
+ui:["কওক","ষ্টক","আজি","অৰ্ডাৰ","সামগ্ৰী","ভাষা","টিপি কওক","শুনি আছোঁ…","নাইবা ইয়াত লিখক","অডিঅ' সংৰক্ষণ নহয়","এনেকৈ কৈ চাওক","নিশ্চিত কৰক","বাতিল","শেষৰ এণ্ট্ৰি আঁতৰাওক","কোনটা?","কিমানটা?","ক্ষমা কৰিব, বুজি নাপালোঁ। আকৌ কওক।","তালিকাত নাই","সামগ্ৰী যোগ কৰক","বিক্ৰী লিখা হ'ল।","ষ্টক যোগ হ'ল।","শেষৰ এণ্ট্ৰি আঁতৰোৱা হ'ল।","এতিয়াৰ ষ্টক","{p}: {n}টা আছে","দাম","আজি: {n}টা বিক্ৰী, ₹{v}","ষ্টক কম","আনিব লাগে","হোৱাটছএপৰ বাবে অৰ্ডাৰ কপি কৰক","কপি হ'ল","মাত + লিখা","এই ব্ৰাউজাৰত কেৱল লিখা","ডেম' ৰিছেট","এতিয়াও একো নাই","সামগ্ৰী বিচাৰক","নতুন নাম শিকাওক","ছেভ কৰক","আপোনাৰ ভাষা বাছক","একো আনিব নালাগে","নমস্কাৰ, অনুগ্ৰহ কৰি পঠাওক:","মুঠ","পৰিমাণ","বিক্ৰী","মাল আহিল","সামগ্ৰীৰ নাম","দাম","আৰম্ভণিৰ ষ্টক","পঠাওক","{n}টা সামগ্ৰী কম"],
+ex:["তিনিটা দহ টকাৰ মেগী আৰু দুটা কোক বিক্ৰী হ'ল","মেগী কিমান আছে?","পাঁচ পেটি পাৰ্লে-জি আহিল","আজি কিমান বিক্ৰী হ'ল?"]};
+P.ur={n:'اردو',e:'Urdu',loc:'ur-IN',sc:'Arab',dir:'rtl',lvl:'Full',fb:['hi'],
+num:'1 ایک|2 دو|3 تین|4 چار|5 پانچ|6 چھ چھے|7 سات|8 آٹھ|9 نو|10 دس|11 گیارہ|12 بارہ|15 پندرہ|20 بیس|25 پچیس|30 تیس|40 چالیس|50 پچاس|100 سو|0.5 آدھا',
+k:{sale:'بیچ بکا بکی بکے',buy:'آیا آئی آئے خریدا',stock:'بچی بچا بچے باقی اسٹاک',price:'ریٹ قیمت دام بھاؤ',sum:'آج ٹوٹل حساب',reorder:'منگوانا آرڈر',q:'کتنی کتنا کتنے',and:'اور',rs:'روپ',attr:'والی والا والے',stop:'کا کی کے کو ہے ہیں کیا میں نے دو دیں'},
+ui:["بولیں","اسٹاک","آج","منگوائیں","سامان","زبانیں","دبائیں اور بولیں","سن رہا ہوں…","یا یہاں لکھیں","آواز محفوظ نہیں ہوتی","ایسے بول کر دیکھیں","پکا کریں","منسوخ کریں","پچھلی انٹری ہٹائیں","کون سا؟","کتنے؟","معاف کیجیے، سمجھ نہیں آیا۔ دوبارہ بولیں۔","فہرست میں نہیں ہے","سامان شامل کریں","فروخت درج ہو گئی۔","اسٹاک شامل ہو گیا۔","پچھلی انٹری ہٹا دی گئی۔","ابھی اسٹاک","{p}: {n} بچے ہیں","ریٹ","آج: {n} فروخت، ₹{v}","اسٹاک کم ہے","منگوائیں","واٹس ایپ کے لیے آرڈر کاپی کریں","کاپی ہو گیا","آواز + تحریر","اس براؤزر میں صرف تحریر","ڈیمو ری سیٹ کریں","ابھی کچھ نہیں","سامان تلاش کریں","نیا نام سکھائیں","محفوظ کریں","اپنی زبان منتخب کریں","کچھ منگوانا نہیں ہے","آداب، براہ کرم بھیجیں:","کل","تعداد","فروخت","مال آیا","سامان کا نام","قیمت","ابتدائی اسٹاک","بھیجیں","{n} چیزیں کم ہیں"],
+ex:["تین دس روپے والی میگی اور دو کوک بیچے","میگی کتنی بچی ہے؟","پانچ پیٹی پارلے جی آئی","آج کتنا بکا؟"]};
+P.ne={n:'नेपाली',e:'Nepali',loc:'ne-NP',sc:'Deva',lvl:'Full',fb:['hi'],cls:'वटा ओटा',
+num:'1 एक ek|2 दुई dui|3 तीन tin|4 चार char|5 पाँच panch|6 छ chha|7 सात saat|8 आठ aath|9 नौ nau|10 दश das|11 एघार eghara|12 बाह्र bahra|15 पन्ध्र pandhra|20 बीस bis|25 पच्चीस|30 तीस|40 चालीस|50 पचास|100 सय saya|0.5 आधा',
+k:{sale:'bechen bechyo bechiyo bikri बेच बिक',buy:'aayo ayo kinen आयो किनें',stock:'baki banki बाँकी बाकी स्टक',price:'mol bhau मोल दाम भाउ',sum:'aaja आज jamma जम्मा',reorder:'अर्डर magaune मगाउने',q:'kati कति',and:'ra र',rs:'rupa रुप रु',attr:'wala वाला',stop:'ke bhayo wata के भयो छ दिनुस् वटा ओटा'},
+ui:["बोल्नुहोस्","स्टक","आज","मगाउने","सामान","भाषाहरू","थिचेर बोल्नुहोस्","सुन्दैछु…","वा यहाँ लेख्नुहोस्","आवाज सेभ हुँदैन","यसरी बोलेर हेर्नुहोस्","पक्का गर्नुहोस्","रद्द गर्नुहोस्","अघिल्लो इन्ट्री हटाउनुहोस्","कुन चाहिँ?","कति वटा?","माफ गर्नुहोस्, बुझिनँ। फेरि भन्नुहोस्।","सूचीमा छैन","सामान थप्नुहोस्","बिक्री दर्ता भयो।","स्टक थपियो।","अघिल्लो इन्ट्री हटाइयो।","अहिलेको स्टक","{p}: {n} वटा बाँकी","मोल","आज: {n} बिक्री, ₹{v}","स्टक कम छ","मगाउनुहोस्","व्हाट्सएपका लागि अर्डर कपी गर्नुहोस्","कपी भयो","आवाज + लेखेर","यो ब्राउजरमा लेखेर मात्र","डेमो रिसेट","अहिलेसम्म केही छैन","सामान खोज्नुहोस्","नयाँ नाम सिकाउनुहोस्","सेभ गर्नुहोस्","आफ्नो भाषा छान्नुहोस्","केही मगाउनु पर्दैन","नमस्ते, कृपया पठाउनुहोस्:","जम्मा","परिमाण","बिक्री","माल आयो","सामानको नाम","मूल्य","सुरुको स्टक","पठाउनुहोस्","{n} वटा सामान कम छन्"],
+ex:["तीन दश रुपैयाँको म्यागी र दुई कोक बेचें","म्यागी कति बाँकी छ?","पाँच पेटी पार्ले-जी आयो","आज कति बिक्री भयो?"]};
+/* Partial packs: own numbers and core words; other screens fall back to the related language */
+function part(n,e,loc,sc,fb,num,k,ui,dir){return {n,e,loc,sc,fb,num,k:k||{},uiPart:ui||{},lvl:ui?'Partial':'Basic',dir};}
+P.kok=part('कोंकणी','Konkani','kok-IN','Deva',['mr','hi'],'1 एक ek|2 दोन don|3 तीन tin|4 चार char|5 पांच panch|6 स|7 सात sat|8 आठ aath|9 णव nav|10 धा dha',{sale:'viklo vikle विक',and:'ani आनी'},{0:'उलयात',2:'आयज',11:'खात्री करात',12:'रद्द करात',37:'तुमची भास वेंचात'});
+P.mai=part('मैथिली','Maithili','mai-IN','Deva',['hi'],'1 एक ek|2 दू du|3 तीन teen|4 चारि chari|5 पाँच panch|6 छह छओ|7 सात saat|8 आठ aath|9 नौ नओ|10 दस das',{sale:'बेचल बेचलहुँ',and:'आ आओर'},{0:'बाजू',2:'आइ',11:'पक्का करू',12:'रद्द करू',37:'अपन भाषा चुनू'});
+P.sa=part('संस्कृतम्','Sanskrit','sa-IN','Deva',['hi'],'1 एकम् एक ekam|2 द्वे द्वौ dve|3 त्रीणि त्रयः trini|4 चत्वारि chatvari|5 पञ्च pancha|6 षट् shat|7 सप्त sapta|8 अष्ट ashta|9 नव nava|10 दश dasha',{sale:'विक्रीत vikritam'},{0:'वदतु',2:'अद्य',11:'निश्चिनोतु',12:'निरस्यतु',37:'स्वभाषां चिनोतु'});
+P.doi=part('डोगरी','Dogri','doi-IN','Deva',['hi'],'1 इक ik|2 दो do|3 त्रै trai|4 चार char|5 पंज panj|6 छे chhe|7 सत्त satt|8 अट्ठ atth|9 नौ nau|10 दस das',{and:'ते'},{0:'बोलो',2:'अज्ज',11:'पक्का करो',37:'अपनी भाशा चुनो'});
+P.sd=part('سنڌي','Sindhi','sd-IN','Arab',['ur','hi'],'1 هڪ hik|2 ٻه|3 ٽي|4 چار char|5 پنج panj|6 ڇهه|7 ست|8 اٺ|9 نو|10 ڏهه',{and:'۽'},{0:'ڳالهايو',2:'اڄ',11:'پڪ ڪريو',12:'رد ڪريو',37:'پنهنجي ٻولي چونڊيو'},'rtl');
+P.ks=part('کٲشُر','Kashmiri','ks-IN','Arab',['ur','hi'],'1 akh|2 zi|3 tre|4 tsor|5 paanch|6 she|7 sath|8 aeth|9 nav|10 dah',{},null,'rtl');
+P.mni=part('মৈতৈলোন্','Manipuri (Meitei)','mni-IN','Beng',['bn','hi'],'1 অমা ama|2 অনি ani|3 অহুম ahum|4 মরি mari|5 মঙা manga|6 তরুক taruk|7 তরেৎ taret|8 নিপান nipan|9 মাপন mapan|10 তরা tara',{and:'amasung অমসুং'},null);
+P.brx=part('बड़ो','Bodo','brx-IN','Deva',['hi'],'1 से se|2 नै nwi|3 थाम tham|4 ब्रै brwi|5 बा ba|7 स्नि sni|8 दाइन dain|9 गु gu|10 जि zi',{and:'आरो arw'},null);
+P.sat=part('ᱥᱟᱱᱛᱟᱲᱤ','Santali','sat-IN','Olck',['hi'],'1 ᱢᱤᱫ mit|2 ᱵᱟᱨ bar|3 ᱯᱮ pe|4 ᱯᱚᱱ pon|5 ᱢᱚᱬᱮ mone|6 ᱛᱩᱨᱩᱭ turui|7 ᱮᱭᱟᱭ eae|8 ᱤᱨᱟᱹᱞ iral|9 ᱟᱨᱮ are|10 ᱜᱮᱞ gel',{and:'ᱟᱨ'},null);
+const LANG_ORDER=['hi','hg','en','bn','mr','ta','te','gu','kn','ml','pa','or','as','ur','ne','kok','mai','sa','sd','ks','doi','mni','brx','sat'];
+const SCRIPT_LANGS={Deva:['hi','mr','ne','kok','mai','doi','sa','brx'],Beng:['bn','as','mni'],Taml:['ta'],Telu:['te'],Gujr:['gu'],Knda:['kn'],Mlym:['ml'],Guru:['pa'],Orya:['or'],Arab:['ur','sd','ks'],Olck:['sat'],Latn:[]};
+/* Units, size words and filler words shared by every language */
+const UNITS={
+pkt:'packet packets pkt pack pakit pude piece pieces pc pcs bottle bottles nag पैकेट पाकिट पुडा नग बोतल बाटली প্যাকেট বোতল பாக்கெட் பாட்டில் ప్యాకెట్ ప్యాకెట్లు సీసా પેકેટ બોટલ ಪ್ಯಾಕೆಟ್ ಬಾಟಲಿ പാക്കറ്റ് കുപ്പി ਪੈਕੇਟ ਬੋਤਲ ପ୍ୟାକେଟ ବୋତଲ پیکٹ بوتل',
+dozen:'dozen darjan दर्जन डझन ডজন டஜன் డజన్ ડઝન ಡಜನ್ ഡസൻ ਦਰਜਨ ଡଜନ درجن',
+case:'peti carton cartons box boxes khoka पेटी कार्टन खोका পেটি কার্টন பெட்டி பெட்டிகள் పెట్టె పెట్టెలు પેટી ಪೆಟ್ಟಿಗೆ പെട്ടി ਪੇਟੀ ପେଟି پیٹی',
+size:'ml gm g gram grams kg kilo kilos litre liter litres l ltr किलो ग्राम लीटर लिटर কিলো কেজি গ্রাম লিটার கிலோ கிராம் லிட்டர் కిలో కేజీ గ్రాము లీటర్ કિલો ગ્રામ લિટર ಕಿಲೋ ಕೆಜಿ ಗ್ರಾಂ ಲೀಟರ್ കിലോ ഗ്രാം ലിറ്റർ ਕਿਲੋ ਗ੍ਰਾਮ ਲੀਟਰ କିଲୋ ଗ୍ରାମ ଲିଟର کلو گرام لیٹر'};
+const SIZE_ADJ={S:'small chhota chhoti chota choti lahan छोटा छोटी छोटे लहान ছোট சின்ன చిన్న નાની નાનું નાનો ಚಿಕ್ಕ ചെറിയ ਛੋਟਾ ਛੋਟੀ ଛୋଟ چھوٹی چھوٹا',L:'big large bada badi motha mothi बड़ा बड़ी बड़े मोठा मोठी বড় பெரிய పెద్ద મોટી મોટું મોટો ದೊಡ್ಡ വലിയ ਵੱਡਾ ਵੱਡੀ ବଡ଼ بڑی بڑا'};
+const MITRA='mitra mithra मित्र मित्रा মিত্র மித்ரா மித்ர మిత్ర મિત્ર ಮಿತ್ರ മിത്ര ਮਿੱਤਰ ਮਿਤ੍ਰ ମିତ୍ର متر مترا';
+const GENERIC='biscuit biscuits noodles powder बिस्कुट बिस्किट नूडल्स পাউডার বিস্কুট பிஸ்கட் బిస్కెట్ બિસ્કિટ ಬಿಸ್ಕೆಟ್ ബിസ്കറ്റ് ਬਿਸਕੁਟ ବିସ୍କୁଟ بسکٹ';
+/* Seed catalogue. Prices, stock and case sizes are illustrative sample data. */
+function prod(id,fam,pack,price,open,ro,cs,d){return {id,fam,pack,price,open,ro,cs,d:d||0};}
+const PRODUCTS=[
+prod('SKU-MAGGI-10','maggi','70 g',10,20,12,24,1),prod('SKU-MAGGI-FAMILY','maggi','280 g',56,8,4,12),
+prod('SKU-COKE-250','coke','250 ml',20,15,12,24,1),prod('SKU-COKE-750','coke','750 ml',40,10,6,12),
+prod('SKU-PARLEG-5','parleg','₹5',5,40,24,24,1),prod('SKU-PARLEG-10','parleg','₹10',10,30,18,24),
+prod('SKU-SALT-1KG','salt','1 kg',28,18,8,25),prod('SKU-ATTA-5KG','atta','5 kg',265,6,4,4),
+prod('SKU-BUTTER-100','butter','100 g',60,5,6,20),prod('SKU-SURF-1KG','surf','1 kg',140,7,4,12),
+prod('SKU-LIFEBUOY','lifebuoy','100 g',35,14,10,48),prod('SKU-COLGATE-100','colgate','100 g',65,9,6,24),
+prod('SKU-DAIRYMILK-20','dairymilk','₹20',20,22,15,30),prod('SKU-KURKURE-10','kurkure','₹10',10,9,15,30),
+prod('SKU-LAYS-10','lays','₹10',10,26,15,30),prod('SKU-BISLERI-1L','bisleri','1 L',20,12,12,12),
+prod('SKU-REDLABEL-250','redlabel','250 g',140,6,4,12),prod('SKU-SUGAR-1KG','sugar','1 kg',45,25,10,25),
+prod('SKU-TOORDAL-1KG','toordal','1 kg',160,12,6,10),prod('SKU-RICE-1KG','rice','1 kg',60,30,15,25),
+prod('SKU-OIL-1L','oil','1 L',170,8,5,12)];
+/* Spoken names per family and script. First entry in each script is the display name. */
+const FAM={
+maggi:{Latn:'Maggi|maggi|magi|meggi|maggie',Deva:'मैगी|मॅगी|मेगी|म्यागी',Beng:'ম্যাগি|ম্যাগী|মেগী|মেগি',Taml:'மேகி|மாகி|மேக்கி',Telu:'మ్యాగీ|మ్యాగి|మాగీ',Gujr:'મેગી|મૅગી',Knda:'ಮ್ಯಾಗಿ|ಮ್ಯಾಗೀ',Mlym:'മാഗി|മാഗ്ഗി',Guru:'ਮੈਗੀ',Orya:'ମ୍ୟାଗି|ମାଗି',Arab:'میگی'},
+coke:{Latn:'Coke|coke|coca cola|cocacola|koka kola|kok',Deva:'कोक|कोका कोला',Beng:'কোক|কোকা কোলা',Taml:'கோக்|கோகோ கோலா',Telu:'కోక్|కోకా కోలా',Gujr:'કોક|કોકા કોલા',Knda:'ಕೋಕ್',Mlym:'കോക്ക്|കോക്',Guru:'ਕੋਕ',Orya:'କୋକ',Arab:'کوک'},
+parleg:{Latn:'Parle-G|parle g|parleg|parle ji|parle',Deva:'पारले-जी|पारले जी|पार्ले जी|पारले',Beng:'পার্লে-জি|পার্লে জি|পারলে জি|পাৰ্লে জি',Taml:'பார்லே-ஜி|பார்லே ஜி',Telu:'పార్లే-జి|పార్లే జి|పార్లే జీ',Gujr:'પાર્લે-જી|પાર્લે જી|પારલે જી',Knda:'ಪಾರ್ಲೆ-ಜಿ|ಪಾರ್ಲೆ ಜಿ',Mlym:'പാർലെ-ജി|പാർലെ ജി|പാർലേ ജി',Guru:'ਪਾਰਲੇ-ਜੀ|ਪਾਰਲੇ ਜੀ',Orya:'ପାର୍ଲେ-ଜି|ପାର୍ଲେ ଜି',Arab:'پارلے جی'},
+salt:{Latn:'Tata Salt|tata salt|salt|namak|tata namak|nun|lobon|meeth|uppu',Deva:'टाटा नमक|नमक|मीठ|नून',Beng:'টাটা নুন|নুন|লবণ',Taml:'உப்பு',Telu:'ఉప్పు',Gujr:'મીઠું|નમક',Knda:'ಉಪ್ಪು',Mlym:'ഉപ്പ്',Guru:'ਲੂਣ|ਨਮਕ',Orya:'ଲୁଣ',Arab:'نمک'},
+atta:{Latn:'Aashirvaad Atta|aashirvaad atta|atta|aata|ashirvad atta|aashirvaad|wheat flour|flour|peeth',Deva:'आशीर्वाद आटा|आटा|पीठ|गव्हाचे पीठ',Beng:'আটা',Taml:'கோதுமை மாவு|ஆட்டா',Telu:'గోధుమ పిండి|ఆటా',Gujr:'લોટ|આટો',Knda:'ಗೋಧಿ ಹಿಟ್ಟು',Mlym:'ആട്ട|ഗോതമ്പ് പൊടി',Guru:'ਆਟਾ',Orya:'ଅଟା',Arab:'آٹا'},
+butter:{Latn:'Amul Butter|amul butter|butter|makhan|makkhan|amul makhan|loni|vennai|venna',Deva:'अमूल मक्खन|मक्खन|अमूल बटर|बटर|लोणी',Beng:'আমুল মাখন|মাখন|বাটার',Taml:'வெண்ணெய்|அமுல் வெண்ணெய்',Telu:'వెన్న|అమూల్ వెన్న',Gujr:'અમૂલ માખણ|માખણ',Knda:'ಬೆಣ್ಣೆ',Mlym:'വെണ്ണ',Guru:'ਮੱਖਣ',Orya:'ଲହୁଣୀ',Arab:'مکھن'},
+surf:{Latn:'Surf Excel|surf excel|surf|detergent|washing',Deva:'सर्फ एक्सेल|सर्फ',Beng:'সার্ফ এক্সেল|সার্ফ',Taml:'சர்ஃப் எக்ஸெல்|சர்ப்',Telu:'సర్ఫ్ ఎక్సెల్|సర్ఫ్',Gujr:'સર્ફ એક્સેલ|સર્ફ',Knda:'ಸರ್ಫ್ ಎಕ್ಸೆಲ್|ಸರ್ಫ್',Mlym:'സർഫ് എക്സൽ|സർഫ്',Guru:'ਸਰਫ ਐਕਸਲ|ਸਰਫ',Orya:'ସର୍ଫ ଏକ୍ସେଲ|ସର୍ଫ',Arab:'سرف ایکسل|سرف'},
+lifebuoy:{Latn:'Lifebuoy|lifebuoy|lifeboy|lifebuoy soap|sabun|soap',Deva:'लाइफबॉय|साबुन|साबण',Beng:'লাইফবয়|সাবান',Taml:'லைஃப்பாய்|சோப்பு',Telu:'లైఫ్‌బాయ్|సబ్బు',Gujr:'લાઇફબોય|સાબુ',Knda:'ಲೈಫ್‌ಬಾಯ್|ಸೋಪು',Mlym:'ലൈഫ്ബോയ്|സോപ്പ്',Guru:'ਲਾਈਫਬੁਆਏ|ਸਾਬਣ',Orya:'ଲାଇଫବୟ|ସାବୁନ',Arab:'لائف بوائے|صابن'},
+colgate:{Latn:'Colgate|colgate|kolgate|toothpaste|colgate paste|paste',Deva:'कोलगेट|टूथपेस्ट|पेस्ट',Beng:'কোলগেট|টুথপেস্ট',Taml:'கோல்கேட்|பேஸ்ட்',Telu:'కోల్గేట్|పేస్ట్',Gujr:'કોલગેટ',Knda:'ಕೋಲ್ಗೇಟ್',Mlym:'കോൾഗേറ്റ്',Guru:'ਕੋਲਗੇਟ',Orya:'କୋଲଗେଟ',Arab:'کولگیٹ'},
+dairymilk:{Latn:'Dairy Milk|dairy milk|dairymilk|cadbury|chocolate|cadbury dairy milk',Deva:'डेयरी मिल्क|कैडबरी|चॉकलेट',Beng:'ডেয়ারি মিল্ক|ক্যাডবেরি|চকোলেট',Taml:'டெய்ரி மில்க்|சாக்லேட்',Telu:'డైరీ మిల్క్|చాక్లెట్',Gujr:'ડેરી મિલ્ક|ચોકલેટ',Knda:'ಡೈರಿ ಮಿಲ್ಕ್|ಚಾಕೊಲೇಟ್',Mlym:'ഡയറി മിൽക്ക്|ചോക്ലേറ്റ്',Guru:'ਡੇਅਰੀ ਮਿਲਕ|ਚਾਕਲੇਟ',Orya:'ଡେରି ମିଲ୍କ|ଚକୋଲେଟ',Arab:'ڈیری ملک|چاکلیٹ'},
+kurkure:{Latn:'Kurkure|kurkure|kurkura',Deva:'कुरकुरे',Beng:'কুরকুরে',Taml:'குர்குரே',Telu:'కుర్కురే',Gujr:'કુરકુરે',Knda:'ಕುರ್ಕುರೆ',Mlym:'കുർക്കുറെ',Guru:'ਕੁਰਕੁਰੇ',Orya:'କୁରକୁରେ',Arab:'کرکرے'},
+lays:{Latn:'Lays|lays|lays chips|chips',Deva:'लेज़|लेज|चिप्स',Beng:'লেজ|চিপস',Taml:'லேஸ்|சிப்ஸ்',Telu:'లేస్|చిప్స్',Gujr:'લેઝ|ચિપ્સ',Knda:'ಲೇಸ್|ಚಿಪ್ಸ್',Mlym:'ലേയ്സ്|ചിപ്സ്',Guru:'ਲੇਜ਼|ਚਿਪਸ',Orya:'ଲେଜ|ଚିପ୍ସ',Arab:'لیز|چپس'},
+bisleri:{Latn:'Bisleri|bisleri|bislery|water|pani|paani|mineral water',Deva:'बिसलेरी|पानी|पाणी',Beng:'বিসলেরি|জল|পানি',Taml:'பிஸ்லெரி|தண்ணீர்',Telu:'బిస్లెరి|నీళ్ళు|నీళ్లు',Gujr:'બિસ્લેરી|પાણી',Knda:'ಬಿಸ್ಲೆರಿ|ನೀರು',Mlym:'ബിസ്ലേരി|വെള്ളം',Guru:'ਬਿਸਲੇਰੀ|ਪਾਣੀ',Orya:'ବିସଲେରି|ପାଣି',Arab:'بسلیری|پانی'},
+redlabel:{Latn:'Red Label|red label|redlabel|chai patti|chaipatti|chai|tea|chaha|red label tea',Deva:'रेड लेबल|चाय पत्ती|चाय|चहा',Beng:'রেড লেবেল|চা|চা পাতা',Taml:'ரெட் லேபிள்|டீ|தேயிலை',Telu:'రెడ్ లేబుల్|టీ',Gujr:'રેડ લેબલ|ચા',Knda:'ರೆಡ್ ಲೇಬಲ್|ಟೀ|ಚಹಾ',Mlym:'റെഡ് ലേബൽ|ചായ',Guru:'ਰੈੱਡ ਲੇਬਲ|ਚਾਹ',Orya:'ରେଡ ଲେବଲ|ଚା',Arab:'ریڈ لیبل|چائے'},
+sugar:{Latn:'Sugar|sugar|cheeni|chini|shakkar|sakhar|sakkarai|chakkera|khand|sakkare|panchasara',Deva:'चीनी|शक्कर|साखर',Beng:'চিনি|চেনি',Taml:'சர்க்கரை|சீனி',Telu:'చక్కెర|పంచదార',Gujr:'ખાંડ',Knda:'ಸಕ್ಕರೆ',Mlym:'പഞ്ചസാര',Guru:'ਖੰਡ|ਚੀਨੀ',Orya:'ଚିନି',Arab:'چینی|شکر'},
+toordal:{Latn:'Toor Dal|toor dal|tur dal|arhar dal|arhar|dal|daal|toor|tuvar dal|paruppu|pappu',Deva:'तूर दाल|अरहर दाल|दाल|तूर डाळ|डाळ',Beng:'ডাল|অড়হর ডাল',Taml:'துவரம் பருப்பு|பருப்பு',Telu:'కందిపప్పు|పప్పు',Gujr:'તુવેર દાળ|દાળ',Knda:'ತೊಗರಿ ಬೇಳೆ|ಬೇಳೆ',Mlym:'തുവര പരിപ്പ്|പരിപ്പ്',Guru:'ਦਾਲ|ਅਰਹਰ ਦਾਲ',Orya:'ଡାଲି|ହରଡ଼ ଡାଲି',Arab:'دال|ارہر دال'},
+rice:{Latn:'Rice|rice|chawal|chaawal|chaul|tandul|arisi|biyyam|akki|chokha',Deva:'चावल|तांदूळ',Beng:'চাল|চাউল',Taml:'அரிசி',Telu:'బియ్యం',Gujr:'ચોખા',Knda:'ಅಕ್ಕಿ',Mlym:'അരി',Guru:'ਚੌਲ|ਚਾਵਲ',Orya:'ଚାଉଳ',Arab:'چاول'},
+oil:{Latn:'Mustard Oil|mustard oil|sarson tel|sarso tel|tel|oil|kachi ghani|shorsher tel|ennai|nune',Deva:'सरसों तेल|तेल',Beng:'সর্ষের তেল|সরিষার তেল|তেল',Taml:'கடுகு எண்ணெய்|எண்ணெய்',Telu:'ఆవ నూనె|నూనె',Gujr:'સરસવ તેલ|તેલ',Knda:'ಸಾಸಿವೆ ಎಣ್ಣೆ|ಎಣ್ಣೆ',Mlym:'കടുക് എണ്ണ|എണ്ണ',Guru:'ਸਰ੍ਹੋਂ ਤੇਲ|ਤੇਲ',Orya:'ସୋରିଷ ତେଲ|ତେଲ',Arab:'سرسوں تیل|تیل'}};
+/* Labels added for recording and translation */
+const EXTRA={keepRec:{en:'Keep a recording to play back',hi:'सुनने के लिए रिकॉर्डिंग रखें',hg:'Sunne ke liye recording rakhein',bn:'শোনার জন্য রেকর্ডিং রাখুন',mr:'ऐकण्यासाठी रेकॉर्डिंग ठेवा',ta:'கேட்க பதிவை வைத்திரு',te:'వినడానికి రికార్డింగ్ ఉంచు',gu:'સાંભળવા માટે રેકોર્ડિંગ રાખો',kn:'ಕೇಳಲು ರೆಕಾರ್ಡಿಂಗ್ ಇಡಿ',ml:'കേൾക്കാൻ റെക്കോർഡിംഗ് സൂക്ഷിക്കൂ',pa:'ਸੁਣਨ ਲਈ ਰਿਕਾਰਡਿੰਗ ਰੱਖੋ',or:'ଶୁଣିବା ପାଇଁ ରେକର୍ଡିଂ ରଖନ୍ତୁ',as:'শুনিবলৈ ৰেকৰ্ডিং ৰাখক',ur:'سننے کے لیے ریکارڈنگ رکھیں',ne:'सुन्नका लागि रेकर्डिङ राख्नुहोस्'},
+trTo:{en:'Translate to',hi:'इस भाषा में अनुवाद',hg:'Is bhasha mein anuvaad',bn:'এই ভাষায় অনুবাদ',mr:'या भाषेत भाषांतर',ta:'இந்த மொழியில் மொழிபெயர்',te:'ఈ భాషలోకి అనువాదం',gu:'આ ભાષામાં અનુવાદ',kn:'ಈ ಭಾಷೆಗೆ ಅನುವಾದ',ml:'ഈ ഭാഷയിലേക്ക് വിവർത്തനം',pa:'ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ',or:'ଏହି ଭାଷାରେ ଅନୁବାଦ',as:'এই ভাষাত অনুবাদ',ur:'اس زبان میں ترجمہ',ne:'यो भाषामा अनुवाद'},
+meaning:{en:'Meaning',hi:'मतलब',hg:'Matlab',bn:'অর্থ',mr:'अर्थ',ta:'பொருள்',te:'అర్థం',gu:'અર્થ',kn:'ಅರ್ಥ',ml:'അർത്ഥം',pa:'ਮਤਲਬ',or:'ଅର୍ଥ',as:'অৰ্থ',ur:'مطلب',ne:'अर्थ'}};
+for(const k in EXTRA){UI_KEYS.push(k);for(const c in EXTRA[k])P[c].ui.push(EXTRA[k][c]);}
+/* VyapaarMitra core: speech-to-action pipeline and stock ledger (no DOM) */
+const BRAHMIC=[['Deva',0x900],['Beng',0x980],['Guru',0xA00],['Gujr',0xA80],['Orya',0xB00],['Taml',0xB80],['Telu',0xC00],['Knda',0xC80],['Mlym',0xD00]];
+function scriptOfChar(ch){const c=ch.codePointAt(0);
+  if(c<0x250)return /[a-z]/i.test(ch)?'Latn':null;
+  for(const [n,b] of BRAHMIC) if(c>=b&&c<b+0x80) return n;
+  if((c>=0x600&&c<0x700)||(c>=0x750&&c<0x780)||(c>=0xFB50&&c<0xFE00)) return 'Arab';
+  if(c>=0x1C50&&c<0x1C80) return 'Olck';
+  return null;}
+function scriptOf(s){const n={};let best='Latn',bc=0;for(const ch of s){const sc=scriptOfChar(ch);if(sc&&sc!=='Latn'){n[sc]=(n[sc]||0)+1;if(n[sc]>bc){bc=n[sc];best=sc;}}}return best;}
+const isLatin=s=>/^[\x00-ɏ]*$/.test(s);
+function asciiDigits(s){let o='';for(const ch of s){const c=ch.codePointAt(0);let d=-1;
+  for(const [,b] of BRAHMIC) if(c>=b+0x66&&c<=b+0x6F) d=c-b-0x66;
+  if(c>=0x660&&c<=0x669)d=c-0x660; if(c>=0x6F0&&c<=0x6F9)d=c-0x6F0; if(c>=0x1C50&&c<=0x1C59)d=c-0x1C50;
+  o+=d>=0?String(d):ch;}return o;}
+/* Stage 3: normalise text into tokens */
+function norm(text){let s=asciiDigits(String(text).normalize('NFC').toLowerCase());
+  s=s.replace(/[​-‍﻿]/g,'').replace(/['’‘`]/g,'').replace(/₹/g,' ₹ ').replace(/[,،]/g,' , ')
+   .replace(/[-–—_\/\\()\[\]{}"“”!?؟।॥۔;:*+=<>|]/g,' ').replace(/([^\d])\.(\d)/g,'$1 $2').replace(/\.(?!\d)/g,' ')
+   .replace(/(\d)(?=[^\d\s.,])/g,'$1 ').replace(/([^\d\s.,])(?=\d)/g,'$1 ');
+  return s.split(/\s+/).filter(Boolean);}
+const words=s=>s?s.split(/\s+/).filter(Boolean):[];
+/* Build lexicons once */
+const KINDS=['rs','and','reorder','sum','price','stock','buy','sale','q','attr','stop'];
+const EXACT={and:1,q:1,attr:1,stop:1};
+for(const c in P){const p=P[c];p.code=c;p.N=new Map();
+  for(const part of (p.num||'').split('|')){const w=words(part);const v=parseFloat(w[0]);for(const x of w.slice(1))p.N.set(x.normalize('NFC'),v);}
+  p.C=words(p.cls);p.K={};for(const k of KINDS)p.K[k]=words((p.k||{})[k]).map(x=>x.normalize('NFC'));}
+const UNIT=new Map();for(const u in UNITS)for(const w of words(UNITS[u]))UNIT.set(w.normalize('NFC'),u);
+const SADJ=new Map();for(const u in SIZE_ADJ)for(const w of words(SIZE_ADJ[u]))SADJ.set(w.normalize('NFC'),u);
+const MIT=new Set(words(MITRA).map(x=>x.normalize('NFC')));
+const GEN=new Set(words(GENERIC).map(x=>x.normalize('NFC')));
+const GSTOP=new Set(GEN);for(const c in P)for(const w of P[c].K.stop)GSTOP.add(w);
+const chainCache={};
+function chain(sel,sc){const key=sel+sc;if(chainCache[key])return chainCache[key];
+  const out=[];for(const c of [sel,...(P[sel].fb||[]),...(SCRIPT_LANGS[sc]||[]),'hi','en'])if(!out.includes(c))out.push(c);
+  return chainCache[key]=out;}
+function numOf(p,t){if(p.N.has(t))return p.N.get(t);
+  for(const suf of p.C)if(t.length>suf.length&&t.endsWith(suf)&&p.N.has(t.slice(0,-suf.length)))return p.N.get(t.slice(0,-suf.length));
+  return null;}
+const stemHit=(t,s)=>t===s||(s.length>=(isLatin(s)?4:3)&&t.startsWith(s));
+function classify(t,sel){
+  if(/^\d+(\.\d+)?$/.test(t))return {t:'NUM',v:parseFloat(t),x:t};
+  if(t==='₹')return {t:'RS',x:t}; if(t===',')return {t:'JOIN',x:t};
+  if(MIT.has(t))return {t:'MITRA',x:t};
+  if(UNIT.has(t))return {t:'UNIT',u:UNIT.get(t),x:t};
+  if(SADJ.has(t))return {t:'SADJ',s:SADJ.get(t),x:t};
+  if(GEN.has(t))return {t:'GEN',x:t};
+  for(const c of chain(sel,scriptOf(t))){const p=P[c];const v=numOf(p,t);
+    if(v!=null)return {t:'NUM',v,x:t,pk:c};
+    for(const k of KINDS)for(const s of p.K[k])if(EXACT[k]?t===s:stemHit(t,s))
+      return k==='rs'?{t:'RS',x:t}:k==='and'?{t:'JOIN',x:t}:k==='attr'?{t:'ATTR',x:t}:k==='stop'?{t:'STOP',x:t}:{t:'KEY',k,x:t};}
+  return {t:'W',x:t};}
+/* Rough transliteration to a consonant skeleton, so a brand written in any script can still match */
+function skel(s){let o='';
+  if(isLatin(s)){s=s.replace(/sh/g,'s').replace(/ch/g,'C').replace(/th/g,'t').replace(/ph/g,'p').replace(/kh|gh|ck|q/g,'k').replace(/bh/g,'p').replace(/dh/g,'t').replace(/x/g,'ks').replace(/c(?=[ei])/g,'s');
+    for(const ch of s)o+=({b:'p',p:'p',f:'p',d:'t',t:'t',g:'k',k:'k',c:'k',C:'C',j:'C',z:'s',s:'s',m:'m',n:'n',r:'r',l:'l',v:'v',w:'v'})[ch]||'';}
+  else for(const ch of s){const c=ch.codePointAt(0);let b=-1;for(const [,x] of BRAHMIC)if(c>=x&&c<x+0x80)b=c-x;
+    if(b>=0){o+=b===0x02||b===0x70||b===0x19||b===0x1E||b===0x23||b===0x28||b===0x29?'n':b>=0x15&&b<=0x18?'k':b>=0x1A&&b<=0x1D?'C':b>=0x1F&&b<=0x27?'t':b>=0x2A&&b<=0x2D?'p':b===0x2E?'m':b===0x30||b===0x31||b===0x5C||b===0x5D?'r':b>=0x32&&b<=0x34?'l':b===0x35?'v':b>=0x36&&b<=0x38?'s':'';}
+    else o+=({'ب':'p','پ':'p','ف':'p','ت':'t','ٹ':'t','ط':'t','د':'t','ڈ':'t','ج':'C','چ':'C','ک':'k','ق':'k','گ':'k','خ':'k','غ':'k','ل':'l','م':'m','ن':'n','ں':'n','ر':'r','ڑ':'r','س':'s','ص':'s','ش':'s','ث':'s','ز':'s','ذ':'s','ض':'s','ظ':'s','ژ':'s'})[ch]||'';}
+  return o.replace(/(.)\1+/g,'$1');}
+function lev(a,b){const A=[...a],B=[...b];let prev=B.map((_,i)=>i+1);prev.unshift(0);
+  for(let i=1;i<=A.length;i++){const cur=[i];for(let j=1;j<=B.length;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(A[i-1]===B[j-1]?0:1));prev=cur;}
+  return 1-prev[B.length]/Math.max(A.length,B.length,1);}
+/* Store */
+function newState(){return {v:2,lang:null,products:PRODUCTS.map(p=>({...p})),fams:{},aliases:[],moves:[],txns:[],seq:1,lastSku:null,voiceFail:{}};}
+const famOf=(st,f)=>FAM[f]||st.fams[f]||{Latn:f};
+function dispName(st,p,sc){const f=famOf(st,p.fam);return (f[sc]||f.Latn).split('|')[0];}
+const prodById=(st,id)=>st.products.find(p=>p.id===id);
+function stockOf(st,id){const p=prodById(st,id);let n=p?p.open:0;for(const m of st.moves)if(m.sku===id)n+=m.d;return Math.round(n*100)/100;}
+function buildIndex(st){const exact=new Map(),list=[];
+  const add=(fam,txt)=>{const t=norm(txt).filter(x=>x!==','&&!GSTOP.has(x)).join(' ');if(!t||exact.has(t))return;const e={fam,text:t,sc:scriptOf(t),sk:skel(t)};exact.set(t,e);list.push(e);};
+  const fams=new Set(st.products.map(p=>p.fam));
+  for(const f of fams){const F=famOf(st,f);for(const sc in F)for(const a of F[sc].split('|'))add(f,a);}
+  for(const a of st.aliases)if(fams.has(a.fam))add(a.fam,a.text);
+  st._idx={exact,list};return st._idx;}
+/* Stage 6: SKU matching — exact alias, then fuzzy, then context (price, size) */
+function matchFam(ws,idx){const n=ws.length;
+  for(let len=Math.min(4,n);len>=1;len--)for(let i=0;i+len<=n;i++){const ph=ws.slice(i,i+len).join(' ');const e=idx.exact.get(ph);if(e)return {fam:e.fam,s:1,used:len,how:'exact alias',ph};}
+  let best=null;
+  for(let len=Math.min(3,n);len>=1;len--)for(let i=0;i+len<=n;i++){const ph=ws.slice(i,i+len).join(' ');const sc=scriptOf(ph),sk=sc==='Latn'?'':skel(ph);
+    for(const a of idx.list){let s=0,how='';
+      if(a.sc===sc&&[...ph].length>=4&&[...a.text].length>=4){const r=lev(ph,a.text);if(r>=0.75){s=r*0.9;how='fuzzy spelling';}}
+      if(sk.length>=2&&sk===a.sk&&0.8>s){s=0.8;how='sound-alike across scripts';}
+      if(s>=0.7&&(!best||s>best.s))best={fam:a.fam,s,used:len,how,ph};}}
+  return best;}
+function resolveSku(st,it,m){const skus=st.products.filter(p=>p.fam===m.fam).sort((a,b)=>a.price-b.price);let c;
+  if(skus.length===1)c=[{sku:skus[0].id,s:m.s*0.95}];
+  else{let pick=null,why='';
+    if(it.price!=null){const hit=skus.filter(p=>p.price===it.price);if(hit.length===1){pick=hit[0];why='price ₹'+it.price+' matches one pack';}}
+    if(!pick&&it.size==='S'){pick=skus[0];why='"small" pack';}
+    if(!pick&&it.size==='L'){pick=skus[skus.length-1];why='"big" pack';}
+    if(!pick&&typeof it.size==='number'){const hit=skus.filter(p=>norm(p.pack).includes(String(it.size)));if(hit.length===1){pick=hit[0];why='pack size '+it.size;}}
+    c=skus.map(p=>({sku:p.id,s:m.s*(pick?(p===pick?0.96:0.5):(p.d?0.78:0.74))}));it.why=why||'several packs, none named';}
+  c.sort((a,b)=>b.s-a.s);it.cands=c;it.sku=c[0].sku;it.score=Math.round(c[0].s*100)/100;it.picked=false;it.how=m.how;}
+function itemStatus(it,intent){if(!it.sku)return 'none';if(it.score<0.85&&!it.picked)return 'pick';
+  if((intent==='SALE'||intent==='PURCHASE')&&it.qty==null)return 'qty';return 'ok';}
+function score(pr){const tx=pr.intent==='SALE'||pr.intent==='PURCHASE';
+  let cp=pr.hasKey?1:0.8;if(tx&&pr.items.some(i=>i.qty==null))cp-=0.3;cp-=Math.min(0.2,0.05*pr.left);cp=Math.max(0,cp);
+  const cs=pr.items.length?Math.min(...pr.items.map(i=>i.sku?(i.picked?1:i.score):0)):(pr.intent==='REPEAT'?0:1);
+  const C=0.2*pr.conf.asr+0.3*cp+0.5*cs;pr.conf={asr:pr.conf.asr,parse:Math.round(cp*100)/100,sku:Math.round(cs*100)/100,C:Math.round(C*100)/100};
+  for(const i of pr.items)i.status=itemStatus(i,pr.intent);
+  if(pr.intent==='REPEAT')pr.status='REPEAT';
+  else if(!tx)pr.status='ANSWER';
+  else pr.status=pr.items.every(i=>i.status==='ok')&&pr.conf.C>=0.85?'READY':'NEEDS_CLARIFICATION';
+  return pr;}
+/* Stages 3–7: text → intent, items, SKUs, confidence */
+function parse(st,text,sel,asr){const idx=st._idx||buildIndex(st);
+  let T=norm(text).map(t=>classify(t,sel)).filter(t=>t.t!=='MITRA');
+  const dbg=T.map(t=>({x:t.x,t:t.t==='KEY'?t.k.toUpperCase():t.t,v:t.v}));
+  // merge compound numbers: "do sau" = 200, "twenty five" = 25
+  for(let i=0;i<T.length-1;i++){const a=T[i],b=T[i+1];if(a.t!=='NUM'||b.t!=='NUM')continue;
+    if(b.v===100&&a.v<10&&a.v>=1){a.v*=100;T.splice(i+1,1);}
+    else if(a.pk&&P[a.pk].compound&&a.pk===b.pk&&a.v>=20&&a.v%10===0&&b.v<10&&b.v>=1){a.v+=b.v;T.splice(i+1,1);}}
+  // prices: "das rupaye (wali)", "₹10", "das wali"
+  const R=[];for(let i=0;i<T.length;i++){const a=T[i],b=T[i+1];
+    if(a.t==='NUM'&&b&&b.t==='RS'){R.push({t:'PRICE',v:a.v});i++;if(T[i+1]&&T[i+1].t==='ATTR')i++;}
+    else if(a.t==='RS'&&b&&b.t==='NUM'){R.push({t:'PRICE',v:b.v});i++;}
+    else if(a.t==='NUM'&&b&&b.t==='ATTR'){R.push({t:'PRICE',v:a.v});i++;}
+    else if(a.t==='NUM'&&b&&b.t==='UNIT'){i++;
+      if(b.u==='dozen')R.push({t:'NUM',v:a.v*12});else if(b.u==='case')R.push({t:'NUM',v:a.v,cs:1});
+      else if(b.u==='size'&&a.v>=50)R.push({t:'SIZE',v:a.v});else R.push({t:'NUM',v:a.v});}
+    else if(a.t==='UNIT'){if(a.u==='dozen')R.push({t:'NUM',v:12});else if(a.u==='size')R.push({t:'W',x:a.x});else R.push({t:'STOP'});}
+    else if(a.t==='ATTR'||a.t==='RS')R.push({t:'STOP'});
+    else R.push(a);}
+  // split into items
+  const keys=new Set(R.filter(t=>t.t==='KEY').map(t=>t.k));const hasGen=R.some(t=>t.t==='GEN');
+  let items=[],cur=null,gap=false;const fresh=()=>({words:[],qty:null,price:null,size:null,cs:false});
+  const push=()=>{if(cur&&(cur.words.length||cur.qty!=null))items.push(cur);cur=fresh();gap=false;};cur=fresh();
+  for(const t of R){
+    if(t.t==='JOIN')push();
+    else if(t.t==='PRICE'){if(cur.price!=null&&cur.words.length)push();cur.price=t.v;if(cur.words.length)gap=true;}
+    else if(t.t==='NUM'){if(cur.qty!=null&&cur.words.length)push();
+      if(cur.qty!=null&&cur.price==null)cur.price=t.v;else{cur.qty=t.v;cur.cs=!!t.cs;}if(cur.words.length)gap=true;}
+    else if(t.t==='SIZE'){cur.size=t.v;}
+    else if(t.t==='SADJ'){cur.size=t.s;}
+    else if(t.t==='W'){if(cur.words.length&&gap&&cur.qty!=null)push();cur.words.push(t.x);}
+    else if(cur.words.length)gap=true;}
+  push();
+  // match products
+  let left=0;const out=[];
+  for(const it of items){if(!it.words.length){out.push(it);continue;}
+    const m=matchFam(it.words,idx);it.mention=it.words.join(' ');
+    if(m){left+=it.words.length-m.used;resolveSku(st,it,m);out.push(it);}else out.push(it);}
+  const matched=out.filter(i=>i.sku);
+  const query=keys.has('q')||keys.has('stock')||keys.has('price')||keys.has('sum')||keys.has('reorder');
+  let intent;
+  if(keys.has('reorder')&&!keys.has('sale')&&!keys.has('buy'))intent='REORDER';
+  else if(keys.has('sum')&&!matched.length)intent='SALES_SUMMARY';
+  else if(keys.has('price')&&matched.length&&!keys.has('sale')&&!keys.has('buy'))intent='PRICE_QUERY';
+  else if((keys.has('stock')||keys.has('q'))&&matched.length&&!keys.has('sale')&&!keys.has('buy'))intent='STOCK_CHECK';
+  else if(keys.has('stock')&&!matched.length&&!keys.has('sale')&&!keys.has('buy'))intent='STOCK_CHECK';
+  else if(keys.has('buy')&&!keys.has('sale'))intent='PURCHASE';
+  else if(matched.length)intent='SALE';
+  else if(keys.has('sale')&&!out.some(i=>i.words.length))intent=out.some(i=>i.qty!=null)&&st.lastSku?'SALE':'SALES_SUMMARY';
+  else intent='SALE';
+  const tx=intent==='SALE'||intent==='PURCHASE';let final=[];
+  if(tx){
+    for(const it of out){
+      if(it.sku)final.push(it);
+      else if(!it.words.length&&it.qty!=null&&st.lastSku&&!matched.length&&!query){ // "do aur de": same product as last time
+        it.sku=st.lastSku;it.score=0.8;it.cands=[{sku:st.lastSku,s:0.8}];it.mention='(same as last)';it.how='conversation context';it.why='no product named';final.push(it);}
+      else if(it.words.length&&(it.qty!=null||keys.has('sale')||keys.has('buy')||hasGen||matched.length===0&&false))final.push(it);
+      else if(it.words.length)left+=it.words.length;}
+    if(!final.length)intent='REPEAT';
+  }else final=matched;
+  const pr={id:'p_'+String(st.seq++).padStart(4,'0'),transcript:String(text).trim(),sel,lang:detectLang(text,sel),intent,items:final,left,
+    hasKey:tx?(intent==='SALE'?keys.has('sale'):keys.has('buy')):true,conf:{asr:asr==null?1:asr},tokens:dbg};
+  for(const it of final){const p=it.sku&&prodById(st,it.sku);if(it.cs&&p&&it.qty!=null){it.cases=it.qty;}}
+  return score(pr);}
+function unitsOf(st,it){const p=prodById(st,it.sku);return it.cases!=null&&p?it.cases*p.cs:it.qty;}
+function detectLang(text,sel){const toks=norm(text).filter(t=>t!==','&&!/^\d/.test(t));const scs=new Set(toks.map(scriptOf));const nat=[...scs].filter(s=>s!=='Latn');
+  if(nat.length){const sc=nat[0];const code=P[sel].sc===sc&&sel!=='hg'?sel:(SCRIPT_LANGS[sc]||[])[0];const nm=code?P[code].e:sc;return scs.has('Latn')?nm+' + English':nm;}
+  let hi=0,en=0,own=0;for(const t of toks){if(sel!=='en'&&sel!=='hg'&&sel!=='hi'&&(numOf(P[sel],t)!=null||KINDS.some(k=>P[sel].K[k].some(s=>stemHit(t,s)))))own++;
+    else if(numOf(P.hi,t)!=null||KINDS.some(k=>P.hi.K[k].some(s=>stemHit(t,s))))hi++;
+    else if(numOf(P.en,t)!=null||KINDS.some(k=>P.en.K[k].some(s=>stemHit(t,s))))en++;}
+  if(own&&own>=hi)return P[sel].e+' (Roman)';if(hi&&en)return 'Hinglish';if(hi)return 'Hinglish';return 'English';}
+/* Stage 8: business logic — every change is a signed inventory movement */
+function commit(st,pr){const dup=st.txns.find(t=>t.id===pr.id);if(dup)return {txn:dup,dup:true,changes:dup.changes};
+  const sign=pr.intent==='PURCHASE'?1:-1,changes=[],items=[];let total=0;
+  for(const it of pr.items){const p=prodById(st,it.sku),u=unitsOf(st,it),before=stockOf(st,p.id);
+    const price=pr.intent==='SALE'?(it.price!=null?it.price:p.price):p.price;
+    st.moves.push({id:st.moves.length+1,t:Date.now(),sku:p.id,d:sign*u,type:pr.intent,ref:pr.id});
+    changes.push({sku:p.id,before,after:Math.round((before+sign*u)*100)/100});items.push({sku:p.id,qty:u,price});
+    if(pr.intent==='SALE')total+=u*price;st.lastSku=p.id;}
+  const txn={id:pr.id,t:Date.now(),type:pr.intent,items,total,text:pr.transcript,lang:pr.lang,changes,C:pr.conf.C};st.txns.push(txn);return {txn,dup:false,changes};}
+function undo(st){const t=[...st.txns].reverse().find(x=>!x.void);if(!t)return null;t.void=true;
+  for(const m of st.moves.filter(m=>m.ref===t.id))st.moves.push({id:st.moves.length+1,t:Date.now(),sku:m.sku,d:-m.d,type:'ADJUST',ref:'undo '+t.id});return t;}
+function lowList(st){return st.products.map(p=>({p,on:stockOf(st,p.id)})).filter(x=>x.on<=x.p.ro).map(x=>({...x,sug:Math.max(1,x.p.ro*3-x.on)}));}
+function daySummary(st,from){const tx=st.txns.filter(t=>!t.void&&t.type==='SALE'&&t.t>=from);const q={};let v=0;
+  for(const t of tx){v+=t.total;for(const i of t.items)q[i.sku]=(q[i.sku]||0)+i.qty;}
+  return {n:tx.length,v,top:Object.entries(q).sort((a,b)=>b[1]-a[1]).slice(0,5)};}
+const inr=n=>Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});
+function ui(sel,key,vars){const i=UI_KEYS.indexOf(key);let s;
+  for(const c of [sel,...(P[sel].fb||[]),'hi','en']){const p=P[c];s=p.ui?p.ui[i]:(p.uiPart||{})[i];if(s)break;}
+  if(vars)for(const k in vars)s=s.split('{'+k+'}').join(vars[k]);return s;}
+function label(st,p,sel){return dispName(st,p,P[sel].sc)+' '+p.pack;}
+function answer(st,pr,sel,dayStart){const L=p=>label(st,p,sel);
+  if(pr.intent==='STOCK_CHECK'){if(!pr.items.length){const n=lowList(st).length;return n?ui(sel,'lowCount',{n}):ui(sel,'allgood');}
+    const fams=[...new Set(pr.items.map(i=>prodById(st,i.sku).fam))];
+    return st.products.filter(p=>fams.includes(p.fam)).map(p=>ui(sel,'left',{p:L(p),n:inr(stockOf(st,p.id))})).join(' · ');}
+  if(pr.intent==='PRICE_QUERY'){const fams=[...new Set(pr.items.map(i=>prodById(st,i.sku).fam))];
+    return st.products.filter(p=>fams.includes(p.fam)).map(p=>L(p)+': ₹'+inr(p.price)).join(' · ');}
+  if(pr.intent==='SALES_SUMMARY'){const s=daySummary(st,dayStart);return ui(sel,'todaySum',{n:s.n,v:inr(s.v)});}
+  if(pr.intent==='REORDER'){const n=lowList(st).length;return n?ui(sel,'lowCount',{n}):ui(sel,'allgood');}
+  return ui(sel,'repeat');}
+/* Meaning translation: the understood entry written out in any language, built from the parse (no network) */
+function gloss(st,pr,to){const nm=i=>i.sku?label(st,prodById(st,i.sku),to):'“'+(i.mention||'')+'”';
+  const line=i=>(i.qty!=null?inr(i.cases!=null?unitsOf(st,i):i.qty)+' × ':'')+nm(i)+(i.price!=null?' (₹'+inr(i.price)+')':'');
+  if(pr.intent==='SALE')return ui(to,'sale')+': '+pr.items.map(line).join(', ');
+  if(pr.intent==='PURCHASE')return ui(to,'purchase')+': '+pr.items.map(line).join(', ');
+  if(pr.intent==='STOCK_CHECK')return ui(to,'t_stock')+'? '+pr.items.map(nm).join(', ');
+  if(pr.intent==='PRICE_QUERY')return ui(to,'rate')+'? '+pr.items.map(nm).join(', ');
+  if(pr.intent==='SALES_SUMMARY')return ui(to,'t_today')+' · '+ui(to,'sale')+'?';
+  if(pr.intent==='REORDER')return ui(to,'t_reorder')+'?';
+  return '';}
+function srcLang(text,sel){const sc=scriptOf(text);if(sc==='Latn')return sel==='en'?'en':sel==='hg'?'hi':P[sel].sc==='Latn'?'en':sel;
+  return P[sel].sc===sc?sel:((SCRIPT_LANGS[sc]||[])[0]||sel);}
+/* VyapaarMitra UI */
+const KEY='vyapaarmitra.v2';
+let S=load();const V={tab:'speak',pr:null,done:null,reply:'',heard:null,lastPr:null,listening:false,interim:'',note:'',q:'',pickQ:'',picker:!S.lang,blocked:false,newName:'',copied:false,orderText:'',clip:null,tr:null};
+let dict=null,rec=null,sampleFn=null,mrec=null,wantRec=false,trSeq=0;const framed=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
+const ERR={'not-allowed':'Microphone permission is blocked. Allow the microphone in the browser address bar, then tap again.','service-not-allowed':'Speech recognition is not allowed here. Open this app in Chrome.','network':'Speech recognition needs an internet connection.','no-speech':'No speech heard. Tap and speak again.','audio-capture':'No microphone found on this device.'};
+const noVoice=()=>framed||window.claude?'Voice cannot run inside this Claude page for you. Open the VyapaarMitra file in Chrome to speak, or type here.':'This browser has no speech recognition. Open the app in Chrome, or type here.';const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2)return s;}catch(e){}return newState();}
+function save(){try{const c={...S};delete c._idx;localStorage.setItem(KEY,JSON.stringify(c));}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lang=()=>S.lang||'hi';const t=(k,v)=>ui(lang(),k,v);
+const L=p=>`<bdi>${esc(dispName(S,p,P[lang()].sc))}</bdi> <bdi>${esc(p.pack)}</bdi>`;
+const dayStart=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime();};
+const MIC='<svg viewBox="0 0 24 24" width="52" height="52" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3" fill="currentColor"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5M8.5 21.5h7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+/* ---- voice ---- */
+const engine=()=>dict?'dictation':(SR&&!V.blocked?'webspeech':null);
+const voiceIn=c=>!!engine()&&!S.voiceFail[c];
+function ttsVoice(c){try{const pre=P[c].loc.split('-')[0].toLowerCase();return speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().replace('_','-').split('-')[0]===pre)||null;}catch(e){return null;}}
+function speak(text,code){try{const v=ttsVoice(code||lang());if(!v||!text)return;const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+function micClick(){V.note='';
+  if(V.listening){try{dict?dict.stop():rec&&rec.stop();}catch(e){}return;}
+  if(dict){dict.start().catch(e=>{V.listening=false;if(e&&e.code==='not_granted'){dict=null;}V.note=t('textOnly');render();});return;}
+  if(!SR||V.blocked){V.note=noVoice();render();const i=$('#typed');if(i)i.focus();return;}
+  if(S.voiceFail[lang()]){V.note=P[lang()].e+' speech is not supported by this browser. Type instead, or switch to Hindi or English to speak.';render();const i=$('#typed');if(i)i.focus();return;}
+  try{rec=new SR();rec.lang=P[lang()].loc;rec.interimResults=true;rec.maxAlternatives=1;
+    rec.onstart=()=>{V.listening=true;V.interim='';render();startClip();};
+    rec.onresult=e=>{let fin='',inter='',conf=0;for(const r of e.results){if(r.isFinal){fin+=r[0].transcript;conf=r[0].confidence;}else inter+=r[0].transcript;}
+      if(fin){V.listening=false;handle(fin,conf>0?Math.round(conf*100)/100:0.85,'Microphone · '+P[lang()].loc);}else{V.interim=inter;paintMic();}};
+    rec.onerror=e=>{if(e.error==='language-not-supported'){S.voiceFail[lang()]=1;save();V.note=P[lang()].e+' speech is not supported by this browser. Type instead, or switch to Hindi or English to speak.';}
+      else if(e.error==='not-allowed'||e.error==='service-not-allowed'){if(framed){V.blocked=true;V.note=noVoice();}else V.note=ERR[e.error];}
+      else if(ERR[e.error])V.note=ERR[e.error];};
+    rec.onend=()=>{V.listening=false;V.interim='';stopClip();render();};rec.start();}
+  catch(e){V.note=noVoice();render();}}
+/* opt-in voice recording for playback; kept in memory on this device only */
+function startClip(){if(!S.keepAudio||!navigator.mediaDevices||!window.MediaRecorder||/Android/i.test(navigator.userAgent))return;wantRec=true;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{const off=()=>stream.getTracks().forEach(x=>x.stop());if(!wantRec)return off();
+    const chunks=[];mrec=new MediaRecorder(stream);mrec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+    mrec.onstop=()=>{off();if(chunks.length){if(V.clip)URL.revokeObjectURL(V.clip);V.clip=URL.createObjectURL(new Blob(chunks,{type:mrec.mimeType||'audio/webm'}));render();}mrec=null;};mrec.start();
+    if(!wantRec)mrec.stop();}).catch(()=>{});}
+function stopClip(){wantRec=false;try{if(mrec&&mrec.state==='recording')mrec.stop();}catch(e){}}
+/* translation: on-device Chrome translator, then Claude, then the free MyMemory service */
+async function fullTranslate(text,src,to){const iso=c=>P[c].loc.split('-')[0];
+  if('Translator' in self){try{const o={sourceLanguage:iso(src),targetLanguage:iso(to)};if(await Translator.availability(o)!=='unavailable'){const tr=await Translator.create(o);return {text:await tr.translate(text),engine:'Chrome on-device translator'};}}catch(e){}}
+  if(sampleFn){try{const r=await sampleFn('Translate this shopkeeper sentence from '+P[src].e+' into '+P[to].e+'. Keep brand names as they are. Reply with the translation only, nothing else.\n\n'+text,{modelTier:'quick'});if(r&&r.text)return {text:r.text.trim(),engine:'Claude'};}catch(e){if(e&&e.code==='not_granted')sampleFn=null;}}
+  try{const ac=new AbortController();setTimeout(()=>ac.abort(),7000);const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text.slice(0,160))+'&langpair='+iso(src)+'|'+iso(to),{signal:ac.signal});const j=await r.json();if(j&&j.responseStatus==200&&j.responseData&&j.responseData.translatedText)return {text:j.responseData.translatedText,engine:'MyMemory online service'};}catch(e){}
+  return null;}
+function translateNow(){const pr=V.lastPr,to=S.trTo;if(!pr||!to||!V.heard){V.tr=null;return;}
+  const src=srcLang(V.heard.text,lang()),seq=++trSeq;V.tr={to,gloss:gloss(S,pr,to),full:'',engine:'',busy:src!==to};
+  if(src===to)return;
+  fullTranslate(V.heard.text,src,to).then(r=>{if(seq!==trSeq||!V.tr)return;V.tr.busy=false;if(r){V.tr.full=r.text;V.tr.engine=r.engine;}render();});}
+if(window.claude&&window.claude.use)window.claude.use('dictation').then(d=>{if(!d)return;dict=d;
+  d.onState(({state})=>{V.listening=state==='listening';if(!V.listening)V.interim='';render();});
+  d.onPartial(({text})=>{V.interim=text;paintMic();});
+  d.onFinal(({text})=>{if(text&&text.trim()){d.stop().catch(()=>{});handle(text,0.9,'Microphone · dictation');}});render();}).catch(()=>{});
+if(window.claude&&window.claude.use)window.claude.use('sample').then(f=>{if(f)sampleFn=f;}).catch(()=>{});
+try{speechSynthesis.onvoiceschanged=()=>{if(V.tab==='lang')render();};}catch(e){}
+/* ---- pipeline glue ---- */
+function handle(text,asr,src){text=String(text||'').trim();if(!text)return;
+  const pr=parse(S,text,lang(),asr);V.heard={text,src:src||'Typed'};V.lastPr=pr;V.done=null;V.pr=null;V.reply='';V.interim='';
+  if(pr.status==='REPEAT'){V.reply=t('repeat');speak(V.reply);}
+  else if(pr.status==='ANSWER'){V.reply=answer(S,pr,lang(),dayStart());speak(V.reply);
+    if(pr.intent==='REORDER')V.tab='reorder';else if(pr.intent==='STOCK_CHECK'&&!pr.items.length)V.tab='stock';}
+  else{V.pr=pr;speak(question(pr));}
+  translateNow();save();render();}
+function question(pr){const it=pr.items.find(i=>i.status!=='ok');if(!it)return '';
+  if(it.status==='none')return it.mention+': '+t('notfound');
+  const p=prodById(S,it.sku),nm=dispName(S,p,P[lang()].sc);
+  if(it.status==='pick')return nm+': '+it.cands.map(c=>prodById(S,c.sku).pack).join(', ')+'. '+t('which');
+  return nm+': '+t('howmany');}
+function confirmTxn(){const pr=V.pr;if(!pr||pr.status!=='READY')return;V.pr=null;
+  const res=commit(S,pr);V.done={pr,res};
+  const now=res.changes.map(c=>dispName(S,prodById(S,c.sku),P[lang()].sc)+' '+inr(c.after)).join(', ');
+  V.reply=t(pr.intent==='PURCHASE'?'bought':'saved')+' '+t('now')+': '+now+'.';speak(V.reply);save();render();}
+/* ---- views ---- */
+function slip(){const pr=V.pr||(V.done&&V.done.pr);if(!pr)return '';const done=!!V.done;let total=0;
+  const rows=pr.items.map((it,i)=>{const p=it.sku&&prodById(S,it.sku);
+    if(it.status==='none')return `<li class="row ask"><div class="nm">“${esc(it.mention)}” <em>${esc(t('notfound'))}</em></div><div class="opts"><button class="chip" data-act="addprod" data-i="${i}">${esc(t('add'))}</button><button class="x" data-act="rm" data-i="${i}" aria-label="${esc(t('cancel'))}">×</button></div></li>`;
+    if(it.status==='pick')return `<li class="row ask"><div class="nm">${esc(dispName(S,p,P[lang()].sc))}${it.qty!=null?' × '+inr(it.qty):''} <em>${esc(t('which'))}</em></div><div class="opts">${it.cands.map(c=>{const q=prodById(S,c.sku);return `<button class="chip" data-act="pick" data-i="${i}" data-sku="${q.id}">${L(q)} · <bdi>₹${inr(q.price)}</bdi></button>`;}).join('')}<button class="x" data-act="rm" data-i="${i}" aria-label="${esc(t('cancel'))}">×</button></div></li>`;
+    if(it.status==='qty')return `<li class="row ask"><div class="nm">${L(p)} <em>${esc(t('howmany'))}</em></div><div class="opts">${[1,2,3,4,5,6,10,12].map(n=>`<button class="chip num" data-act="qty" data-i="${i}" data-n="${n}">${n}</button>`).join('')}<button class="x" data-act="rm" data-i="${i}" aria-label="${esc(t('cancel'))}">×</button></div></li>`;
+    const u=unitsOf(S,it),price=pr.intent==='SALE'?(it.price!=null?it.price:p.price):p.price,amt=u*price;if(pr.intent==='SALE')total+=amt;
+    return `<li class="row"><div class="nm">${L(p)}${it.cases!=null?`<small>${inr(it.cases)} × ${p.cs} = ${inr(u)}</small>`:''}</div>
+      <div class="q">${done?inr(u):`<button class="st" data-act="step" data-i="${i}" data-d="-1" aria-label="−">−</button><b>${inr(it.cases!=null?it.cases:it.qty)}</b><button class="st" data-act="step" data-i="${i}" data-d="1" aria-label="+">+</button>`}</div>
+      <div class="r">${pr.intent==='SALE'?'₹'+inr(price):''}</div><div class="a">${pr.intent==='SALE'?'₹'+inr(amt):''}</div>
+      ${done?'':`<button class="x" data-act="rm" data-i="${i}" aria-label="${esc(t('cancel'))}">×</button>`}</li>`;}).join('');
+  const after=done?`<ul class="after">${V.done.res.changes.map(c=>`<li><span>${L(prodById(S,c.sku))}</span><b>${inr(c.before)} → ${inr(c.after)}</b>${c.after<0?' <i class="neg">below zero</i>':''}</li>`).join('')}</ul>`:'';
+  return `<article class="slip ${done?'done':''}" aria-live="polite"><header><b>${esc(t(pr.intent==='PURCHASE'?'purchase':'sale'))}</b><span>No. ${pr.id.slice(2)}</span></header>
+    <div class="cols4"><span>${esc(t('name'))}</span><span>${esc(t('qty'))}</span><span>${pr.intent==='SALE'?esc(t('rate')):''}</span><span>₹</span></div>
+    <ul class="rows">${rows}</ul>
+    ${pr.intent==='SALE'?`<div class="tot"><span>${esc(t('total'))}</span><b>₹${inr(total)}</b></div>`:''}
+    ${done?`<div class="stamp">${esc(t(pr.intent==='PURCHASE'?'bought':'saved'))}</div><h4>${esc(t('now'))}</h4>${after}`
+      :`<div class="acts"><button class="btn ghost" data-act="cancel">${esc(t('cancel'))}</button><button class="btn go" data-act="confirm" ${pr.status==='READY'?'':'disabled'}>${esc(t('confirm'))}</button></div>`}</article>`;}
+function viewSpeak(){const p=P[lang()],vin=voiceIn(lang());
+  const canUndo=S.txns.some(x=>!x.void);
+  return `<section class="speak"><div class="badges"><span class="badge ${vin?'on':'off'}">${esc(t(vin?'voiceOk':'textOnly'))}</span>${p.lvl!=='Full'?`<span class="badge off">${p.lvl} pack · screens in ${esc(P[p.fb[0]].e)}</span>`:''}</div>
+    <button class="mic ${V.listening?'live':''}" data-act="mic" aria-label="${esc(t('tap'))}">${MIC}</button>
+    <p class="micstate" id="micstate">${esc(V.listening?(V.interim||t('listening')):(V.note||t('tap')))}</p>
+    ${S.keepAudio?'':`<p class="privacy">${esc(t('audio'))}</p>`}
+    <form id="typef" class="typef"><input id="typed" type="text" autocomplete="off" placeholder="${esc(t('type'))}" aria-label="${esc(t('type'))}"><button class="btn go" type="submit">${esc(t('send'))}</button></form>
+    <div class="optrow"><label class="ck"><input type="checkbox" id="keeprec" ${S.keepAudio?'checked':''}> ${esc(t('keepRec'))}</label>
+      <label class="sel">${esc(t('trTo'))} <select id="trsel"><option value="">—</option>${LANG_ORDER.filter(c=>c!=='hg').map(c=>`<option value="${c}" ${S.trTo===c?'selected':''}>${esc(P[c].n)} · ${esc(P[c].e)}</option>`).join('')}</select></label></div>
+    <div id="say">${V.heard?`<div class="heard"><p dir="auto">“${esc(V.heard.text)}”</p><span class="chipl">${esc(V.lastPr.lang)}</span></div>`:''}
+      ${V.clip&&V.heard?`<audio controls src="${V.clip}" aria-label="${esc(t('keepRec'))}"></audio>`:''}
+      ${V.tr&&V.heard?`<div class="trans"><header><b>${esc(P[V.tr.to].n)}</b>${ttsVoice(V.tr.to)?`<button class="btn ghost small" data-act="saytr" aria-label="Play translation">▶</button>`:''}</header>
+        ${V.tr.full?`<p class="full" dir="auto">${esc(V.tr.full)}</p><small>${esc(V.tr.engine)}</small>`:V.tr.busy?'<p class="muted">…</p>':V.tr.to!==srcLang(V.heard.text,lang())?'<small>Word-for-word translation is not available on this page. The meaning below is built from what the app understood.</small>':''}
+        ${V.tr.gloss?`<p dir="auto"><small>${esc(ui(V.tr.to,'meaning'))}</small> ${esc(V.tr.gloss)}</p>`:''}</div>`:''}
+      ${slip()}${V.reply?`<p class="reply" dir="auto">${esc(V.reply)}</p>`:''}
+      ${canUndo&&!V.pr?`<button class="btn ghost small" data-act="undo">${esc(t('undo'))}</button>`:''}</div>
+    <div class="try"><h3>${esc(t('try'))}</h3><div class="chips">${(p.ex||P[p.fb[0]].ex||P.hi.ex).map(e=>`<button class="chip" dir="auto" data-act="ex" data-x="${esc(e)}">${esc(e)}</button>`).join('')}</div></div></section>`;}
+function viewHow(){const pr=V.lastPr;
+  if(!pr)return `<h2>How it understood</h2><p class="muted">Speak or tap an example. Each step from speech to stock update appears here.</p><ol class="steps">${['Speech','Meaning','Product','Transaction','Business action'].map(s=>`<li><h3>${s}</h3></li>`).join('')}</ol>`;
+  const c=pr.conf,st=pr.status,done=V.done&&V.done.pr===pr;
+  const json=JSON.stringify({parse_id:pr.id,intent:pr.intent,language_detected:pr.lang,items:pr.items.map(i=>({mention:i.mention,qty:i.cases!=null?i.cases+' case':i.qty,unit_price:i.price,sku_id:i.sku||null,match_score:i.picked?1:(i.score||0),candidates:(i.cands||[]).length>1?i.cands.map(x=>x.sku):undefined})),overall_confidence:c.C,status:st},null,1);
+  const act=done?V.done.res.changes.map(x=>`${esc(x.sku)}: ${inr(x.before)} → ${inr(x.after)}`).join('<br>')+'<br><span class="muted">Written as signed inventory movements under one entry.</span>'
+    :st==='READY'?'Waiting for the owner to tap Confirm. Nothing is written until then.':st==='NEEDS_CLARIFICATION'?'Paused. A short question is shown instead of guessing.':st==='ANSWER'?'Read-only query. Stock is not changed.':'Asked the owner to repeat.';
+  return `<h2>How it understood</h2><ol class="steps">
+   <li><h3>Speech</h3><p dir="auto">“${esc(pr.transcript)}”</p><p class="muted">${esc(V.heard.src)} · detected ${esc(pr.lang)} · ASR confidence ${c.asr}</p></li>
+   <li><h3>Meaning</h3><p><b class="intent">${pr.intent}</b> <span class="tag">Rules</span></p><div class="toks">${pr.tokens.map(k=>`<span class="tok ${k.t==='W'?'w':k.t==='STOP'||k.t==='MITRA'?'s':'k'}" dir="auto">${esc(k.x)}<i>${k.t==='W'?'word':k.t==='NUM'?k.v:k.t.toLowerCase()}</i></span>`).join('')}</div></li>
+   <li><h3>Product</h3>${pr.items.length?pr.items.map(i=>`<p dir="auto">“${esc(i.mention||'')}” → ${i.sku?`<b>${esc(i.sku)}</b> ${i.picked?'1.00 (chosen by owner)':i.score}`:'no match'}<br><span class="muted">${esc(i.how||'')}${i.why?' · '+esc(i.why):''}${(i.cands||[]).length>1?' · candidates '+i.cands.map(x=>x.sku.replace('SKU-','')+' '+(Math.round(x.s*100)/100)).join(', '):''}</span></p>`).join(''):'<p class="muted">No product needed.</p>'}</li>
+   <li><h3>Transaction</h3><pre>${esc(json)}</pre><p class="muted">C = 0.2 × ${c.asr} + 0.3 × ${c.parse} + 0.5 × ${c.sku} = <b>${c.C}</b></p><div class="meter"><i style="width:${Math.round(c.C*100)}%"></i><span style="left:50%"></span><span style="left:85%"></span></div><p class="muted">Below 0.50 ask to repeat · 0.85 and above show the confirm card</p></li>
+   <li><h3>Business action</h3><p>${act}</p></li></ol>`;}
+function viewStock(){const q=V.q.trim().toLowerCase();
+  const list=S.products.filter(p=>{if(!q)return true;const F=famOf(S,p.fam);return Object.values(F).join('|').toLowerCase().includes(q)||p.id.toLowerCase().includes(q);});
+  return `<section><input id="q" class="search" type="search" value="${esc(V.q)}" placeholder="${esc(t('search'))}" aria-label="${esc(t('search'))}">
+   <ul class="plist">${list.map(p=>{const on=stockOf(S,p.id),low=on<=p.ro;return `<li class="${low?'low':''}"><div><b>${L(p)}</b><small><bdi>₹${inr(p.price)}</bdi> · <bdi>${esc(p.id)}</bdi></small></div><div class="on"><b>${inr(on)}</b>${low?`<span class="pill">${esc(t('low'))}</span>`:''}<small>↻ ${p.ro}</small></div></li>`;}).join('')||`<li class="muted">${esc(t('none'))}</li>`}</ul></section>`;}
+function viewToday(){const s=daySummary(S,dayStart());const log=[...S.txns].reverse();
+  return `<section><div class="tiles"><div><small>${esc(t('sale'))}</small><b>₹${inr(s.v)}</b></div><div><small>${esc(t('t_today'))}</small><b>${s.n}</b></div></div>
+   ${s.top.length?`<ul class="plist">${s.top.map(([id,n])=>`<li><div><b>${L(prodById(S,id))}</b></div><div class="on"><b>${inr(n)}</b></div></li>`).join('')}</ul>`:''}
+   <ul class="log">${log.map(x=>`<li class="${x.void?'void':''}"><div><span class="pill ${x.type==='SALE'?'':'in'}">${esc(t(x.type==='SALE'?'sale':'purchase'))}</span> <small>${new Date(x.t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} · ${esc(x.lang)}${x.void?' · undone':''}</small></div><p dir="auto">“${esc(x.text)}”</p><small>${x.items.map(i=>L(prodById(S,i.sku))+' × '+inr(i.qty)).join(', ')}${x.type==='SALE'?' · ₹'+inr(x.total):''}</small></li>`).join('')||`<li class="muted">${esc(t('none'))}</li>`}</ul>
+   ${S.txns.some(x=>!x.void)?`<button class="btn ghost small" data-act="undo">${esc(t('undo'))}</button>`:''}</section>`;}
+function viewReorder(){const low=lowList(S);
+  V.orderText=t('orderMsg')+'\n'+low.map(x=>'• '+label(S,x.p,lang())+' × '+inr(x.sug)).join('\n');
+  return `<section>${low.length?`<ul class="plist">${low.map(x=>`<li class="low"><div><b>${L(x.p)}</b><small>${esc(t('now'))}: ${inr(x.on)} · ↻ ${x.p.ro}</small></div><div class="on"><small>${esc(t('order'))}</small><b>${inr(x.sug)}</b></div></li>`).join('')}</ul>
+   <textarea id="ordertxt" readonly rows="${low.length+1}" dir="auto" aria-label="${esc(t('copy'))}">${esc(V.orderText)}</textarea>
+   <button class="btn go" data-act="copy">${esc(V.copied?t('copied'):t('copy'))}</button>`:`<p class="muted">${esc(t('allgood'))}</p>`}</section>`;}
+function viewCat(){return `<section><form id="addf" class="addf"><h3>${esc(t('add'))}</h3>
+   <label>${esc(t('name'))}<input id="np_name" type="text" required value="${esc(V.newName)}" dir="auto"></label>
+   <label>${esc(t('priceL'))} ₹<input id="np_price" type="number" min="0" step="0.5" required inputmode="decimal"></label>
+   <label>${esc(t('opening'))}<input id="np_open" type="number" min="0" step="1" value="0" inputmode="numeric"></label>
+   <button class="btn go" type="submit">${esc(t('save'))}</button></form>
+   <ul class="plist">${S.products.map(p=>`<li class="teach"><div><b>${L(p)}</b><small>${esc(Object.values(famOf(S,p.fam)).map(x=>x.split('|')[0]).slice(0,6).join(' · '))}</small></div>
+     <form class="teachf" data-fam="${esc(p.fam)}"><input type="text" id="al_${esc(p.id)}" placeholder="${esc(t('teach'))}" aria-label="${esc(t('teach'))}" dir="auto"><button class="btn ghost small" type="submit">${esc(t('save'))}</button></form></li>`).join('')}</ul></section>`;}
+function viewLang(){const eng=engine();
+  return `<section><p class="muted">Voice in is tested when you first speak in a language. Voice out needs a matching system voice. Text works for every language.${eng==='dictation'?' Voice in here uses Claude dictation.':eng?'':' This page cannot use the microphone here, so every language is text only.'}</p>
+   <div class="tblwrap"><table><thead><tr><th>Language</th><th>Pack</th><th>Voice in</th><th>Voice out</th><th>Text</th></tr></thead><tbody>
+   ${LANG_ORDER.map(c=>{const p=P[c];return `<tr class="${c===lang()?'cur':''}"><td><button class="lnk" data-act="setlang" data-c="${c}"><b>${esc(p.n)}</b> <small>${esc(p.e)}</small></button></td><td>${p.lvl}</td><td>${!eng?'No':S.voiceFail[c]?'No':'Try'}</td><td>${ttsVoice(c)?'Yes':'No'}</td><td>Yes</td></tr>`;}).join('')}</tbody></table></div>
+   <p class="muted">Full: every screen, reply and example in the language. Partial: numbers and core words in the language, other screens in a related language. Basic: numbers only.</p>
+   <button class="btn ghost small" data-act="reset">${esc(t('reset'))}</button></section>`;}
+function picker(){const q=V.pickQ.trim().toLowerCase();
+  return `<div class="pick" role="dialog" aria-modal="true" aria-label="Choose your language"><div class="pickin"><h1>VyapaarMitra</h1><p class="sub">${S.lang?esc(t('choose')):'अपनी भाषा चुनें · Choose your language'}</p>
+   <input id="pickq" type="search" placeholder="Search · खोजें" value="${esc(V.pickQ)}" aria-label="Search languages">
+   <div class="lgrid">${LANG_ORDER.filter(c=>!q||P[c].e.toLowerCase().includes(q)||P[c].n.toLowerCase().includes(q)).map(c=>`<button data-act="setlang" data-c="${c}" class="${c===S.lang?'cur':''}"><b dir="auto">${esc(P[c].n)}</b><small>${esc(P[c].e)}</small></button>`).join('')}</div>
+   ${S.lang?`<button class="btn ghost" data-act="closepick">${esc(t('cancel'))}</button>`:''}</div></div>`;}
+function paintMic(){const m=$('#micstate');if(m)m.textContent=V.interim||t('listening');}
+function render(){const p=P[lang()];document.documentElement.lang=p.loc.split('-')[0];document.documentElement.dir=p.dir||'ltr';
+  $('#langbtn').innerHTML=`<b>${esc(p.n)}</b>`;
+  const tabs=[['speak','t_speak'],['stock','t_stock'],['today','t_today'],['reorder','t_reorder'],['cat','t_cat'],['lang','t_lang']];
+  const lowN=lowList(S).length;
+  $('#tabs').innerHTML=tabs.map(([k,l])=>`<button data-act="tab" data-k="${k}" class="${V.tab===k?'cur':''}" ${V.tab===k?'aria-current="page"':''}>${esc(t(l))}${k==='reorder'&&lowN?`<i>${lowN}</i>`:''}</button>`).join('');
+  $('#view').innerHTML=({speak:viewSpeak,stock:viewStock,today:viewToday,reorder:viewReorder,cat:viewCat,lang:viewLang})[V.tab]();
+  $('#how').innerHTML=viewHow();$('#how').className=V.tab==='speak'?'':'hidem';
+  $('#picker').innerHTML=V.picker?picker():'';$('#resetbtn').textContent=t('reset');}
+/* ---- events ---- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,i=+b.dataset.i,pr=V.pr;
+  if(a==='mic')return micClick();
+  if(a==='tab'){V.tab=b.dataset.k;V.copied=false;}
+  else if(a==='ex')return handle(b.dataset.x,1,'Example phrase');
+  else if(a==='openpick'){V.picker=true;V.pickQ='';}
+  else if(a==='closepick')V.picker=false;
+  else if(a==='saytr'){if(V.tr)speak(V.tr.full||V.tr.gloss,V.tr.to);return;}
+  else if(a==='setlang'){S.lang=b.dataset.c;V.picker=false;V.pr=null;V.done=null;V.reply='';V.heard=null;V.lastPr=null;V.note='';V.tr=null;save();}
+  else if(a==='pick'&&pr){const it=pr.items[i];it.sku=b.dataset.sku;it.picked=true;score(pr);const q=question(pr);if(q)speak(q);}
+  else if(a==='qty'&&pr){const it=pr.items[i];it.qty=+b.dataset.n;if(it.cs)it.cases=it.qty;score(pr);}
+  else if(a==='step'&&pr){const it=pr.items[i],n=Math.max(1,(it.cases!=null?it.cases:it.qty)+(+b.dataset.d));it.qty=n;if(it.cases!=null)it.cases=n;score(pr);}
+  else if(a==='rm'&&pr){pr.items.splice(i,1);if(!pr.items.length)V.pr=null;else score(pr);}
+  else if(a==='addprod'&&pr){V.newName=pr.items[i].mention;V.tab='cat';}
+  else if(a==='cancel'){V.pr=null;V.reply='';}
+  else if(a==='confirm')return confirmTxn();
+  else if(a==='undo'){if(undo(S)){V.done=null;V.pr=null;V.reply=t('undone');speak(V.reply);save();}}
+  else if(a==='reset'){const l=S.lang,k=S.keepAudio,tt=S.trTo;S=newState();S.lang=l;S.keepAudio=k;S.trTo=tt;V.tr=null;Object.assign(V,{pr:null,done:null,reply:'',heard:null,lastPr:null,q:'',newName:''});save();}
+  else if(a==='copy'){const done=()=>{V.copied=true;render();};try{navigator.clipboard.writeText(V.orderText).then(done,()=>{const x=$('#ordertxt');x.focus();x.select();});}catch(err){const x=$('#ordertxt');x.focus();x.select();}return;}
+  render();});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target;
+  if(f.id==='typef'){const v=$('#typed').value;if(v.trim())handle(v,1,'Typed');}
+  else if(f.id==='addf'){const name=$('#np_name').value.trim(),price=parseFloat($('#np_price').value),open=parseFloat($('#np_open').value)||0;if(!name||isNaN(price))return;
+    const id='SKU-NEW-'+(S.products.length+1),fam='x'+id;S.fams[fam]={[scriptOf(name)==='Latn'?'Latn':scriptOf(name)]:name,Latn:scriptOf(name)==='Latn'?name+'|'+name.toLowerCase():name};
+    S.products.push({id,fam,pack:'',price,open,ro:Math.max(2,Math.ceil(open/3)),cs:12,d:1});buildIndex(S);V.newName='';save();
+    if(V.heard&&V.lastPr&&V.lastPr.items.some(i=>i.status==='none')){V.tab='speak';return handle(V.heard.text,V.lastPr.conf.asr,V.heard.src);}render();}
+  else if(f.classList.contains('teachf')){const inp=f.querySelector('input'),v=inp.value.trim();if(!v)return;S.aliases.push({fam:f.dataset.fam,text:v});buildIndex(S);save();inp.value='';inp.placeholder='✓ '+v;}});
+document.addEventListener('change',e=>{if(e.target.id==='keeprec'){S.keepAudio=e.target.checked;if(!S.keepAudio&&V.clip){URL.revokeObjectURL(V.clip);V.clip=null;}save();render();}
+  if(e.target.id==='trsel'){S.trTo=e.target.value;translateNow();save();render();}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){V.q=e.target.value;const pos=e.target.selectionStart;render();const x=$('#q');x.focus();try{x.setSelectionRange(pos,pos);}catch(err){}}
+  if(e.target.id==='pickq'){V.pickQ=e.target.value;const pos=e.target.selectionStart;render();const x=$('#pickq');x.focus();try{x.setSelectionRange(pos,pos);}catch(err){}}});
+buildIndex(S);render();
+</script>
+</body>
+</html>
